@@ -1,1 +1,0 @@
-materialx>=1.39
