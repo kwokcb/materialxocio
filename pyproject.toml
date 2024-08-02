@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "materialxjson"
-version = "1.39"
+name = "materialxocio"
+version = "0.1.39.0"
 authors = [
   { name="Bernard Kwok", email="kwokcb@gmail.com" },
 ]
-description = "Utilities handling I/O of MaterialX in JSON format"
+description = "Utilities for MaterialX 1.38.9 and OCIO 2.2 and above"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {file = "LICENSE"}
@@ -20,7 +20,8 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "materialx>=1.39"
+    "materialx>=1.38.9",
+    "opencolorio>=2.2.0"
 ]
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -28,7 +29,7 @@ where = ["src"]
 "materialxjson.data" = ["*.*"]
 
 [project.urls]
-"Homepage" = "https://kwokcb.github.io/materialxjson/"
-"Issues" = "https://github.com/kwokcb/materialxjson/issues"
-"Source Code" = "https://github.com/kwokcb/materialxjson"
-"Documentation" = "https://kwokcb.github.io/materialxjson/"
+"Homepage" = "https://kwokcb.github.io/materialxocio/"
+"Issues" = "https://github.com/kwokcb/materialxocio/issues"
+"Source Code" = "https://github.com/kwokcb/materialxocio"
+"Documentation" = "https://kwokcb.github.io/materialxocio/"

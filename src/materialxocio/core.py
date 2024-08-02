@@ -1,420 +1,308 @@
-# core.py
-
+#!/usr/bin/env python
 '''
-@file 
-This module contains the core definitions and utilities for reading and wring MaterialX
-in JSON format.
+Utilities to generate MaterialX color transform definitions using OCIO.
+
+The minimum requirement is OCIO version 2.2 which is packaged with
+ACES Cg Config` and `ACES Studio Config` configurations.
 '''
 
-# MaterialX support
+import PyOpenColorIO as OCIO
 import MaterialX as mx
 
-# JSON support
-import json
-
-# Utilities
-import os
-
-# Mime type
-JSON_MIMETYPE_KEY = 'mimetype'
-JSON_MIMETYPE: str = 'application/mtlx+json'
-# We use a colon to separate the category and name of an element in the JSON hierarchy
-JSON_CATEGORY_NAME_SEPARATOR: str = ':'
-# The root of the JSON hierarchy
-MATERIALX_DOCUMENT_ROOT: str = 'materialx'
-
-# Special names for child element grouping. These do not correspond to any MaterialX syntax
-INPUTS_STRING = 'inputs'
-OUTPUTS_STRING = 'outputs'
-CHILDREN_STRING = 'children'
-
-class JsonWriteOptions:
+class OCIOMaterialaxGenerator():
     '''
-    Class for holding options for writing MaterialX to JSON.
-
-    Options:
-        - elementPredicate: MaterialX function predicate for filtering elements to write
-        - indent: The number of spaces to indent the JSON hierarchy
-        - separators: JSON separators. Default is: (',', ': ')
-        - addInputOutputCategories: Add input and output categories to JSON elements. Default is False
+    A class to generate MaterialX color transform definitions using OCIO.
     '''
-    def __init__(self):
-        '''
-        @brief Constructor
-        '''
-        self.elementPredicate: mx.ElementPredicate = None
-        self.indent = None
-        self.separators = (',', ': ') 
-        self.addInputOutputCategories = True
 
-class JsonReadOptions:
-    '''
-    Class for holding options for reading MaterialX from JSON
+    def getBuiltinConfigs(self):
+        '''
+        Get the OCIO built in configurations.
+        Returnes a dictionary of color spaces and the default `ACES Cg Config`.
+        '''
 
-    Options:
-        - upgradeVersion: Upgrade the MaterialX document to the latest version        
-    '''
-    def __init__(self):
-        '''
-        @brief Constructor
-        '''
-        self.upgradeVersion = True
+        # As of version 2.2, `ACES Cg Config` and `ACES Studio Config` are packaged with `OCIO`, meaning that 
+        # they are available to use without having to download them separately. The `getBuiltinConfigs()` 
+        # API is explained [here](https://opencolorio.readthedocs.io/en/latest/releases/ocio_2_2.html)
 
-class MaterialXJson:
-    '''
-    Class for handling read and write of MaterialX from and to JSON
-    '''
-    def elementToJSON(self, elem: mx.Element, jsonParent: dict, writeOptions: JsonWriteOptions = None) -> dict:
-        '''
-        @brief Convert an MaterialX XML element to JSON.
-        Will recursively traverse the parent/child Element hierarchy.
-        @param elem The MaterialX element to convert
-        @param jsonParent The JSON element append to
-        @param writeOptions The write options to use. Default is None
-        '''
-        if (writeOptions and writeOptions.elementPredicate and not writeOptions.elementPredicate(elem)):
-            return
+        # Get the OCIO built in configs
+        registry = OCIO.BuiltinConfigRegistry().getBuiltinConfigs()
 
-        if (elem.getSourceUri() != ""):
-            return
-        
-        # Create a new JSON element for the MaterialX element
-        jsonElem = {}
-        jsonElem['name'] = elem.getName()
-        category = elem.getCategory()
-        # It is redundant but not incorrect to add in the category
-        # For now always add in the category
-        if (writeOptions and writeOptions.addInputOutputCategories) or (category not in ['input', 'output']):
-            jsonElem['category'] = category
-        
-        # Add attributes
-        for attrName in elem.getAttributeNames():
-            jsonElem[attrName] = elem.getAttribute(attrName)
+        # Create a dictionary of configs
+        configs = {}
+        for item in registry:
+            # The short_name is the URI-style name.
+            # The ui_name is the name to use in a user interface.
+            short_name, ui_name, isRecommended, isDefault = item
 
-        # Add children. Split based on category: input, output or other
-        inputs = []
-        outputs = []
-        non_input_outputs = []
-        for child in elem.getChildren():
-            category = child.getCategory()
-            if category == 'input':
-                self.elementToJSON(child, inputs)
-            elif category == 'output':
-                self.elementToJSON(child, outputs)
-            else:
-                self.elementToJSON(child, non_input_outputs)
-        
-        # Add inputs, outputs and other children
-        if len(inputs) > 0:
-            jsonElem[INPUTS_STRING] = inputs
-        if len(outputs) > 0:
-            jsonElem[OUTPUTS_STRING] = outputs
-        if len(non_input_outputs) > 0:
-            jsonElem[CHILDREN_STRING] = non_input_outputs
+            # Don't present built-in configs to users if they are no longer recommended.
+            if isRecommended:
+                # Create a config using the Cg config
+                config = OCIO.Config.CreateFromBuiltinConfig(short_name)
+                colorSpaces = None
+                if config:
+                    colorSpaces = config.getColorSpaces()
 
-        # Add the JSON element to the parent            
-        jsonParent.append(jsonElem)
+                if colorSpaces:
+                    configs[short_name] = [config, colorSpaces]
 
-        return jsonParent
+        acesCgConfigPath = 'ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1'
+        builtinCfgC = OCIO.Config.CreateFromFile(acesCgConfigPath)
+        print('Built-in config:', builtinCfgC.getName())
+        csnames = builtinCfgC.getColorSpaceNames()
+        print('- Number of color spaces: %d' % len(csnames))
 
-    def documentToJSON(self, doc: mx.Document, writeOptions: JsonWriteOptions = None) -> dict:
-        '''
-        Convert an MaterialX XML document to JSON
-        @param doc The MaterialX document to convert
-        @param writeOptions The write options to use. Default is None
-        @return The JSON document
-        '''
-        root = {}
-        # Set the mimetype
-        root[JSON_MIMETYPE_KEY] = JSON_MIMETYPE
+        return configs, builtinCfgC
 
-        # Create the document
-        documentRoot = {}
+    def printConfigs(self, configs):
+        title = '| Configuration | Color Space | Aliases |\n'
+        title = title + '| --- | --- | --- |\n'
 
-        # Add document level attributes
-        for attrName in doc.getAttributeNames():
-            documentRoot[attrName] = doc.getAttribute(attrName)
+        rows = ''
+        for c in configs:
+            config = configs[c][0]
+            colorSpaces = configs[c][1]
+            for colorSpace in colorSpaces:
+                aliases = colorSpace.getAliases()
+                rows = rows + '| ' + c + ' | ' + colorSpace.getName() + ' | ' + ', '.join(aliases) + ' |\n'
 
-        # Add children
-        children = []
-        for elem in doc.getChildren():
-            self.elementToJSON(elem, children, writeOptions)
-        documentRoot['children'] = children
+        return title + rows
 
-        # Set 'materialx' root element 
-        root[MATERIALX_DOCUMENT_ROOT] = documentRoot
+    def createTransformName(self, sourceSpace, targetSpace, typeName):
+        '''
+        Create a transform name from a source and target color space and a type name.
+        '''        
+        transformFunctionName = "mx_" + mx.createValidName(sourceSpace) + "_to_" + mx.createValidName(targetSpace) + "_" + typeName 
+        return transformFunctionName
 
-        return root
-    
-    def documentToJSONString(self, doc: mx.Document, writeOptions: JsonWriteOptions = None) -> str:
+    def setShaderDescriptionParameters(self, shaderDesc, sourceSpace, targetSpace, typeName):
         '''
-        Convert an MaterialX XML document to JSON string
-        @param doc The MaterialX document to convert
-        @param writeOptions The write options to use. Default is None
-        @return The JSON string
         '''
-        result = self.documentToJSON(doc, writeOptions)
-        json_string = ''
-        if result:
-            indentation = 2
-            sep = (',', ': ')
-            if writeOptions:
-                indentation = writeOptions.indent
-                sep = writeOptions.separators
-            json_string = json.dumps(result, indent=indentation, separators=sep)
+        transformFunctionName = self.createTransformName(sourceSpace, targetSpace, typeName)
+        shaderDesc.setFunctionName(transformFunctionName)
+        shaderDesc.setResourcePrefix(transformFunctionName)
 
-        return json_string
+    def generateShaderCode(self, config, sourceColorSpace, destColorSpace, language):
+        '''
+        Generate shader for a transform from a source color space to a destination color space
+        for a given config and shader language.
 
-    def elementFromJSON(self, node: dict, elem: mx.Element, readOptions: JsonReadOptions = None) -> None:
+        Returns the shader code and the number of texture resources required.
         '''
-        @brief Convert an JSON element to MaterialX
-        @param node The JSON element to read
-        @param elem The MaterialX element to write to
-        @param readOptions The read options to use. Default is None
-        '''
-        for key in node:
-            value = node[key]
+        shaderCode = ''
+        textureCount = 0
+        if not config:
+            return shaderCode, textureCount
 
-            # Set attributes            
-            if isinstance(value, str):
-                if key not in ['name', 'category']:
-                    elem.setAttribute(key, str(value))
-
-            # Traverse children
-            elif key == INPUTS_STRING:
-                for child in value:
-                    category = 'input'
-                    name = child['name']
-                    childElem = elem.addChildOfCategory(category, name)
-                    self.elementFromJSON(child, childElem)
-
-            elif key == OUTPUTS_STRING:
-                for child in value:
-                    category = 'output'
-                    name = child['name']
-                    childElem = elem.addChildOfCategory(category, name)
-                    self.elementFromJSON(child, childElem)
-                
-            elif key == CHILDREN_STRING:
-                for child in value:
-                    category = child['category']
-                    name = child['name']
-                    childElem = elem.addChildOfCategory(category, name)
-                    self.elementFromJSON(child, childElem)
-
-    def documentFromJSON(self, jsonDoc: dict, doc: mx.Document, readOptions: JsonReadOptions = None) -> bool:
-        '''
-        @brief Convert a JSON document to MaterialX
-        @param jsonDoc The JSON document to read
-        @param doc The MaterialX document to write to 
-        @param readOptions The read options to use. Default is None
-        '''
-        readDoc = False
-        # Check mimetype and existence of MaterialX root element
-        if JSON_MIMETYPE_KEY in jsonDoc and jsonDoc[JSON_MIMETYPE_KEY] == JSON_MIMETYPE:
-            if MATERIALX_DOCUMENT_ROOT in jsonDoc:
-                self.elementFromJSON(jsonDoc['materialx'], doc, readOptions)
-                readDoc = True
-            else:
-                print('JSON document is missing a MaterialX root element')
-        else:
-            print('JSON document is not a MaterialX document')
-
-        if readDoc:
-            # Upgrade to latest version if requested
-            if readOptions and readOptions.upgradeVersion:
-                doc.upgradeVersion()
-
-        return readDoc
-
-    def documentFromJSONString(self, jsonString: str, doc: mx.Document, readOptions: JsonReadOptions = None) -> bool:
-        '''
-        @brief Convert a JSON document to MaterialX
-        @param jsonString The JSON string to read
-        @param doc The MaterialX document to write to 
-        @param readOptions The read options to use. Default is None
-        @return True if successful, false otherwise
-        '''
-        jsonDoc = json.loads(jsonString)
-        readDoc = False
-        if jsonDoc:
-            readDoc = self.documentFromJSON(jsonDoc, doc, readOptions)
-        return readDoc
-
-class Util:
-    '''
-    Utility class for MaterialX JSON
-    '''
-    @staticmethod
-    def readJson(fileName: str) -> dict:
-        '''
-        @brief Read a JSON file
-        @param fileName The file name to read
-        @return The JSON document
-        '''
-        jsonFile = open(fileName, 'r')
-        if not jsonFile:
-            return False
-
-        jsonObject = json.load(jsonFile)
-        if not jsonObject:
-            return False
-
-        return jsonObject
-    
-    @staticmethod
-    def jsonStringToJson(jsonString: str) -> dict:
-        '''
-        @brief Convert a JSON string to a JSON document
-        @param jsonString The JSON string to convert
-        @return The JSON document
-        '''
-        return json.loads(jsonString)
-    
-    @staticmethod
-    def jsonToJSONString(jsonObject: dict, indentation = 2) -> str:
-        '''
-        @brief Convert a JSON document to a JSON string
-        @param jsonObject The JSON document to convert
-        @return The JSON string
-        '''
-        return json.dumps(jsonObject, indent=indentation)
-    
-    @staticmethod
-    def documentToXMLString(doc: mx.Document) -> str:
-        '''
-        @brief Convert a MaterialX document to XML string
-        @param doc The MaterialX document to convert
-        @return The XML string
-        '''
-        return mx.writeToXmlString(doc)
-    
-    @staticmethod
-    def xmlStringToDocument(doc: mx.Document, xmlString: str) -> None:
-        '''
-        @brief Convert an XML string to a MaterialX document
-        @param doc The MaterialX document to write to
-        @param xmlString The XML string to convert
-        '''
-        mx.readFromXmlString(doc, xmlString)
-
-    @staticmethod
-    def writeJson(jsonObject: dict, fileName: str, indentation = 2) -> None:
-        '''
-        @brief Write a JSON document to file
-        @param jsonObject The JSON document to write
-        @param fileName The file name to write to
-        '''
-        with open(fileName, 'w') as outfile:
-            json.dump(jsonObject, outfile, indent=indentation)
-
-    @staticmethod
-    def getFiles(rootPath: str, extension: str) -> list:
-        '''
-        @brief Get all files with the given extension from the given root path
-        @param rootPath The root path to search from
-        @param extension The extension to search for
-        @return A list of file paths
-        '''
-        filelist = []
-        exts = (extension, extension.upper() )
-        for subdir, dirs, files in os.walk(rootPath):
-            for file in files:
-                if file.lower().endswith(exts):
-                    filelist.append(os.path.join(subdir, file)) 
-        return filelist
-
-    @staticmethod
-    def loadLibraries(searchPath: mx.FileSearchPath, libraryFolders: list) -> tuple:
-        '''
-        @brief Load all libraries from the given search path and library folders
-        @param searchPath The search path to use
-        @param libraryFolders The library folders to use
-        @return A tuple containing the library document and a status string
-        '''
-        status = ''
-        lib = mx.createDocument()
+        # Create a processor for a pair of colorspaces
+        processor = None
         try:
-            libFiles = mx.loadLibraries(libraryFolders, searchPath, lib)
-            status = '- Loaded %d library definitions from %d files' % (len(lib.getNodeDefs()), len(libFiles))
-        except mx.Exception as err:
-            status = '- Failed to load library definitions: "%s"' % err
+            processor = config.getProcessor(sourceColorSpace, destColorSpace)
+        except:
+            print('Failed to generated code for transform: %s -> %s' % (sourceColorSpace, destColorSpace))
+            return shaderCode, textureCount
 
-        return lib, status
-    
-    @staticmethod
-    def jsonFileToXml(fileName: str, readOptions: JsonReadOptions = None) -> mx.Document:
+        if processor:
+            gpuProcessor = processor.getDefaultGPUProcessor()
+            if gpuProcessor:
+                shaderDesc = OCIO.GpuShaderDesc.CreateShaderDesc()
+                if shaderDesc:
+                    try:
+                        shaderDesc.setLanguage(language)
+                        if shaderDesc.getLanguage() == language:
+                            self.setShaderDescriptionParameters(shaderDesc, sourceColorSpace, destColorSpace, "color4")
+                            gpuProcessor.extractGpuShaderInfo(shaderDesc)                                                                 
+                            shaderCode = shaderDesc.getShaderText()
+
+                            for t in shaderDesc.getTextures():
+                                textureCount += 1
+
+                            if shaderCode:
+                                shaderCode = shaderCode.replace(
+                                    "// Declaration of the OCIO shader function\n", 
+                                    "// " + sourceColorSpace + " to " + destColorSpace + " function. Texture count: %d\n" % textureCount)
+
+                    except OCIO.Exception as err:
+                        print(err)
+        
+        return shaderCode, textureCount
+
+    def hasTextureResources(self, configs, targetColorSpace, language):
         '''
-        @brief Convert a JSON file to an XML file
-        @param fileName The file name to read from
-        @param readOptions The read options to use. Default is None
-        @return The MaterialX document if successful, None otherwise
+        Scan through all the color spaces on the configs to check for texture resource usage.
+        Returns a set of color spaces that require texture resources.
         '''
-        mtlxjson = MaterialXJson()
+        testedSources = set()
+        textureSources = set()
+        for c in configs:
+            config = OCIO.Config.CreateFromBuiltinConfig(c)
+            colorSpaces = config.getColorSpaces()
+            for colorSpace in colorSpaces:
+                colorSpaceName = colorSpace.getName()
+                # Skip if the colorspace is already tested
+                if colorSpaceName in testedSources:
+                    continue
+                testedSources.add(colorSpaceName)
 
-        jsonFile = open(fileName, 'r')
-        if not jsonFile:
-            return None
-        jsonObject = json.load(jsonFile)
-        if not jsonObject:
-            return None
+                # Test for texture resource usage
+                code, textureCount = self.generateShaderCode(config, colorSpace.getName(), targetColorSpace, language)
+                if textureCount:
+                    print('- Transform "%s" to "%s" requires %d texture resources' % (colorSpace.getName(), targetColorSpace, textureCount))
+                    textureSources.add(colorSpaceName)
+        
+        return textureSources
 
-        newDoc = mx.createDocument() 
-        readDoc = mtlxjson.documentFromJSON(jsonObject, newDoc, readOptions)
-        if readDoc:
-            return newDoc
+    def MSL(self, config, sourceColorSpace, targetColorSpace):
+        language = OCIO.GpuLanguage.GPU_LANGUAGE_MSL_2_0
+        code, textureCount = self.generateShaderCode(config, sourceColorSpace, targetColorSpace, language)
+        if code:
+            code = code.replace("// Declaration of the OCIO shader function\n", "// " + sourceColorSpace + " to " + targetColorSpace + " function\n")
+            code = '```c++\n' + code + '\n```\n'
 
-        return None
+    def OSL(self, config, sourceColorSpace, targetColorSpace):
+        if OCIO.GpuLanguage.LANGUAGE_OSL_1:
+            language = OCIO.GpuLanguage.LANGUAGE_OSL_1
+            code, textureCount = self.generateShaderCode(config, sourceColorSpace, targetColorSpace, language)
+            if code:
+                # Bit of ugly patching to make the main function name consistent.
+                transformName = self.createTransformName(sourceColorSpace, targetColorSpace, 'color4')
+                code = code.replace('OSL_' + transformName, '__temp_name__')
+                code = code.replace(transformName, transformName + '_impl')
+                code = code.replace('__temp_name__', transformName)
+                code = code.replace("// Declaration of the OCIO shader function\n", "// " + sourceColorSpace + " to " + targetColorSpace + " function\n")
+                code = '```c++\n' + code + '\n```\n'
 
-    @staticmethod
-    def jsonFileToXmlFile(fileName: str, outputFilename: str, readOptions: JsonReadOptions = None) -> bool:
+    def generateMaterialXDefinition(self, doc, sourceColorSpace, targetColorSpace, inputName, type):
         '''
-        @brief Convert a JSON file to an XML file
-        @param fileName The file name to read from
-        @param outputFilename The file name to write to
-        @param readOptions The read options to use. Default is None
-        @return True if successful, false otherwise
+        Create a new definition in a document for a given color space transform.
+        Returns the definition.
         '''
-        jsonFile = open(fileName, 'r')
-        if not jsonFile:
-            return None
-        jsonObject = json.load(jsonFile)
-        if not jsonObject:
-            return None
+        # Create a definition
+        transformName = self.createTransformName(sourceColorSpace, targetColorSpace, type)
+        nodeName = transformName.replace('mx_', 'ND_')
 
-        #newDoc = mx.createDocument() 
-        mtlxjson = MaterialXJson()
-        newDoc = mx.createDocument()
-        created = mtlxjson.documentFromJSON(jsonObject, newDoc, readOptions)
+        comment = doc.addChildOfCategory('comment')
+        docString = ' Color space %s to %s transform. Generated via OCIO. ' % (sourceColorSpace, targetColorSpace)
+        comment.setDocString(docString)
 
-        if newDoc.getChildren():
-            mx.writeToXmlFile(newDoc, outputFilename)    
-            return True
+        definition = doc.addNodeDef(nodeName, 'color4')
+        category = sourceColorSpace + '_to_' + targetColorSpace
+        definition.setNodeString(category)
+        definition.setNodeGroup('colortransform')
+        definition.setDocString(docString)
+        definition.setVersionString('1.0')
 
-        return False
+        defaultValueString = '0.0 0.0 0.0 1.0'
+        defaultValue = mx.createValueFromStrings(defaultValueString, 'color4')
+        input = definition.addInput(inputName, type)
+        input.setValue(defaultValue)
+        output = definition.getOutput('out')
+        output.setAttribute('default', 'in')
 
-    @staticmethod
-    def xmlFileToJsonFile(xmlFileName: str, jsonFileName: str, writeOptions: JsonWriteOptions = None) -> None:
+        return definition
+
+    def writeShaderCode(self, outputPath, code, transformName, extension, target):
         '''
-        Convert an MaterialX XML file to a JSON file
-        @param xmlFileName The XML file to read from
-        @param jsonFileName The JSON file to write to
-        @param writeOptions The write options to use. Default is None
+        Write the shader code to a file.
+        '''   
+        # Write source code file
+        filename = outputPath / mx.FilePath(transformName + '.' + extension)
+        print('Write target[%s] source file %s' % (target,filename.asString()))
+        f = open(filename.asString(), 'w')
+        f.write(code)
+        f.close()
+
+    def createMaterialXImplementation(self, sourceColorSpace, targetColorSpace, doc, definition, transformName, extension, target):
         '''
-        mtlxjson = MaterialXJson()
+        Create a new implementation in a document for a given definition.
+        '''
+        implName = transformName + '_' + target
+        filename = transformName + '.' + extension
+        implName = implName.replace('mx_', 'IM_')
 
-        doc = mx.createDocument()
-        mx.readFromXmlFile(doc, xmlFileName)
-        if doc:
-            # Convert entire document to JSON
-            doc_result = mtlxjson.documentToJSON(doc, writeOptions)
+        # Check if implementation already exists
+        impl = doc.getImplementation(implName)
+        if impl:
+            print('Implementation already exists: %s' % implName)
+            return impl
 
-            # Write JSON to file
-            with open(jsonFileName, 'w') as outfile:
-                indentation = 2
-                sep = (',', ': ')
-                if writeOptions:
-                    indentation = writeOptions.indent
-                    sep = writeOptions.separators
-                json.dump(doc_result, outfile, indent=indentation, separators=sep)
+        comment = doc.addChildOfCategory('comment')
+        comment.setDocString(' Color space %s to %s transform. Generated via OCIO for target: %s' 
+                            % (sourceColorSpace, targetColorSpace, target))
+        impl = doc.addImplementation(implName)
+        impl.setFile(filename)
+        impl.setFunction(transformName)
+        impl.setTarget(target)
+        impl.setNodeDef(definition)
 
+        return impl
+
+    def generateOCIO(self, config, definitionDoc, implDoc, sourceColorSpace = 'acescg', targetColorSpace = 'lin_rec709',
+                    type='color4', IN_PIXEL_STRING = 'in'):
+        '''
+        Generate a MaterialX definition and implementation for a given color space transform.    
+        Returns the definition, implementation, source code, extension and target.
+        '''
+
+        # List of MaterialX target language, source code extensions, and OCIO GPU languages
+        generationList = [
+            ['genglsl', 'glsl', OCIO.GpuLanguage.GPU_LANGUAGE_GLSL_4_0]
+            #, ['genmsl', 'metal', OCIO.GpuLanguage.GPU_LANGUAGE_MSL_2_0]
+            ]
+
+        definition = None
+        transformName = self.createTransformName(sourceColorSpace, targetColorSpace, type)
+        for gen in generationList:
+            target = gen[0]
+            extension = gen[1]
+            language = gen[2]
+
+            code, textureCount = self.generateShaderCode(config, sourceColorSpace, targetColorSpace, language)
+
+            # Skip if there are texture resources
+            if textureCount:
+                print('- Skip generation for transform: "%s" to "%s" which requires %d texture resources' % (sourceColorSpace, targetColorSpace, textureCount))
+                continue
+
+            if code:
+                # Create the definition once
+                if not definition:
+                    # Create color4 variant
+                    definition = self.generateMaterialXDefinition(definitionDoc, sourceColorSpace, targetColorSpace, 
+                                                            IN_PIXEL_STRING, type)
+                    # Create color3 variant (nodegraph)
+                    self.createColor3Variant(definition, definitionDoc, IN_PIXEL_STRING)
+                
+                # Create the implementation
+                self.createMaterialXImplementation(sourceColorSpace, targetColorSpace, implDoc, definition, transformName, extension, target)
+
+        return definition, transformName, code, extension, target     
+
+    def createColor3Variant(self, definition, definitionDoc, IN_PIXEL_STRING = 'in'):
+        '''
+        Create a color3 variant of a color4 definition.
+        '''
+        color4Name = definition.getName()
+        color3Name = color4Name.replace('color4', 'color3')
+        color3Def = definitionDoc.addNodeDef(color3Name)
+        color3Def.copyContentFrom(definition)
+        c3input = color3Def.getInput(IN_PIXEL_STRING)
+        c3input.setType('color3')
+        c3input.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
+            
+        ngName = color3Def.getName().replace('ND_', 'NG_')
+        ng = definitionDoc.addNodeGraph(ngName)
+        c4instance = ng.addNodeInstance(definition)
+        c4instance.addInputsFromNodeDef()
+        c4instanceIn = c4instance.getInput(IN_PIXEL_STRING)
+        c3to4 = ng.addNode('convert', 'c3to4', 'color4')
+        c3to4Input = c3to4.addInput('in', 'color3')
+        c4to3 = ng.addNode('convert', 'c4to3', 'color3')
+        c4to3Input = c4to3.addInput('in', 'color4')
+        ngout = ng.addOutput('out', 'color3')
+        #ngin = ng.addInput('in', 'color3')
+        ng.setNodeDef(color3Def)
+
+        c4instanceIn.setNodeName(c3to4.getName())
+        c4to3Input.setNodeName(c4instance.getName())
+        ngout.setNodeName(c4to3.getName())
+        c3to4Input.setInterfaceName(IN_PIXEL_STRING)

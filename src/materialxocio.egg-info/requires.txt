@@ -1,0 +1,2 @@
+materialx>=1.38.9
+opencolorio>=2.2.0

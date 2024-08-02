@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+src/materialxocio/__init__.py
+src/materialxocio/core.py
+src/materialxocio/genOCIODefinitions.py
+src/materialxocio.egg-info/PKG-INFO
+src/materialxocio.egg-info/SOURCES.txt
+src/materialxocio.egg-info/dependency_links.txt
+src/materialxocio.egg-info/requires.txt
+src/materialxocio.egg-info/top_level.txt
