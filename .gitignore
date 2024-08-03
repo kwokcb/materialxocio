@@ -2,3 +2,4 @@ src/materialxocio.egg-info/
 dist/
 build/
 src/materialxocio/__pycache__/
+/.venv

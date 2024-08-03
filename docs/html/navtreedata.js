@@ -25,12 +25,9 @@
 var NAVTREE =
 [
   [ "MaterialXOCIO", "index.html", [
-    [ "OCIO Utilities for MaterialX", "md__d___work_materialx_materialxocio__r_e_a_d_m_e.html", [
-      [ "Dependencies", "md__d___work_materialx_materialxocio__r_e_a_d_m_e.html#autotoc_md2", null ],
-      [ "Command Line Utilities", "md__d___work_materialx_materialxocio__r_e_a_d_m_e.html#autotoc_md3", null ]
-    ] ],
+    [ "OCIO Utilities for MaterialX", "md___users_bernardkwok_work_materialxocio__r_e_a_d_m_e.html", null ],
     [ "Namespaces", "namespaces.html", [
-      [ "Namespace List", "namespaces.html", "namespaces_dup" ]
+      [ "Namespace List", "namespaces.html", null ]
     ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -45,7 +42,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-""
+"annotated.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
