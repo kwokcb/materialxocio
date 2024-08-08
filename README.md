@@ -1,6 +1,10 @@
 ## OCIO Utilities for MaterialX
 
-This repository contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.
+This site contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.
+
+### Repository
+
+The <code>Github</code> repository is available <a href="https://github.com/kwokcb/materialxocio">here</a>
 
 ### Installation
 
@@ -30,6 +34,12 @@ color transforms without LUTs. Each transform is from the source colorspace to l
   - Source code in the GLSL shading language. Note that options to use other OCIO
     provided languages can be added.
 
-### Notebooks
+### Documentation 
 
-- A background describing the usage of the OCIO package can be found <a href="https://kwokcb.github.io/materialxocio/docs/mtlx_ocio.html">here</a>
+#### API
+
+API documentation can be found <a href="https://kwokcb.github.io/materialxocio/docs/html/index.html">here</a>
+
+#### Notebooks
+
+A background describing the usage of the OCIO package can be found <a href="https://kwokcb.github.io/materialxocio/docs/mtlx_ocio.html">here</a>

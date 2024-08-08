@@ -86,30 +86,41 @@ $(document).ready(function(){initNavTree('md__d___work_materialx_materialxocio__
 <div class="title">OCIO Utilities for MaterialX </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>This repository contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.</p>
+<div class="textblock"><p>This site contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.</p>
 <h2><a class="anchor" id="autotoc_md1"></a>
+Repository</h2>
+<p>The <code>Github</code> repository is available <a href="https://github.com/kwokcb/materialxocio">here</a></p>
+<h2><a class="anchor" id="autotoc_md2"></a>
 Installation</h2>
 <p>To install the utilities, clone the repository and run the following command:</p>
 <div class="fragment"><div class="line">pip install .</div>
 </div><!-- fragment --><p>The distribution will be available on PyPi in the near future as <code>materialxocio</code></p>
-<h1><a class="anchor" id="autotoc_md2"></a>
-Dependencies</h1>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Dependencies</h2>
 <p>The utilities require the following dependencies:</p>
 <ul>
 <li>OpenColorIO 2.2 and above</li>
 <li>MaterialX 1.38.9 and above</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md3"></a>
-Command Line Utilities</h1>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Command Line Utilities</h2>
 <p>The repository contains the following command line utilities:</p>
 <ul>
 <li>generateOCIODefinitions: Generates MaterialX node definitions from the default ACES Cg config for color transforms without LUTs. Each transform is from the source colorspace to lin_rec709. Each definition consists of:<ul>
 <li>A node definition MaterialX file</li>
 <li>A node implementation MaterialX file</li>
-<li>Source code in the GLSL shading language. Note that options to use other OCIO provided languages can be added. </li>
+<li>Source code in the GLSL shading language. Note that options to use other OCIO provided languages can be added.</li>
 </ul>
 </li>
 </ul>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Documentation</h2>
+<h3><a class="anchor" id="autotoc_md6"></a>
+API</h3>
+<p>API documentation can be found <a href="https://kwokcb.github.io/materialxocio/docs/html/index.html">here</a></p>
+<h3><a class="anchor" id="autotoc_md7"></a>
+Notebooks</h3>
+<p>A background describing the usage of the OCIO package can be found <a href="https://kwokcb.github.io/materialxocio/docs/mtlx_ocio.html">here</a> </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 </div><!-- doc-content -->

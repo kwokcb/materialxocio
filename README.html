@@ -354,7 +354,7 @@ code {
 
 </style>
 
-<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.min.js"></script>
 </head>
 <body>
   <script>
@@ -366,7 +366,9 @@ code {
     });
   </script>
 <h2 id="ocio-utilities-for-materialx">OCIO Utilities for MaterialX</h2>
-<p>This repository contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.</p>
+<p>This site contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.</p>
+<h3 id="repository">Repository</h3>
+<p>The <code>Github</code> repository is available <a href="https://github.com/kwokcb/materialxocio">here</a></p>
 <h3 id="installation">Installation</h3>
 <p>To install the utilities, clone the repository and run the following command:</p>
 <pre class="hljs"><code><div>pip install .
@@ -381,20 +383,21 @@ code {
 <h3 id="command-line-utilities">Command Line Utilities</h3>
 <p>The repository contains the following command line utilities:</p>
 <ul>
-<li>generateOCIODefinitions: Generates MaterialX node definitions from the default ACES Cg config for
+<li>generateOCIODefinitions: Generates MaterialX node definitions from the default ACES Cg config for<br>
 color transforms without LUTs. Each transform is from the source colorspace to lin_rec709. Each definition consists of:
 <ul>
 <li>A node definition MaterialX file</li>
 <li>A node implementation MaterialX file</li>
-<li>Source code in the GLSL shading language. Note that options to use other OCIO
+<li>Source code in the GLSL shading language. Note that options to use other OCIO<br>
 provided languages can be added.</li>
 </ul>
 </li>
 </ul>
-<h3 id="notebooks">Notebooks</h3>
-<ul>
-<li>A background describing the usage of the OCIO package can be found <a href="https://kwokcb.github.io/materialxocio/docs/mtlx_ocio.html">here</a></li>
-</ul>
+<h3 id="documentation">Documentation</h3>
+<h4 id="api">API</h4>
+<p>API documentation can be found <a href="https://kwokcb.github.io/materialxocio/docs/html/index.html">here</a></p>
+<h4 id="notebooks">Notebooks</h4>
+<p>A background describing the usage of the OCIO package can be found <a href="https://kwokcb.github.io/materialxocio/docs/mtlx_ocio.html">here</a></p>
 
 </body>
 </html>
