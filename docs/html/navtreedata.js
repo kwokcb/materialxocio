@@ -25,7 +25,7 @@
 var NAVTREE =
 [
   [ "MaterialXOCIO", "index.html", [
-    [ "OCIO Utilities for MaterialX", "md__d___work_materialx_materialxocio__r_e_a_d_m_e.html", null ],
+    [ "OCIO Utilities for MaterialX", "md__2_users_2bernardkwok_2work_2materialxocio_2_r_e_a_d_m_e.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ]
     ] ],
@@ -36,13 +36,16 @@ var NAVTREE =
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ]
       ] ]
+    ] ],
+    [ "Files", "files.html", [
+      [ "File List", "files.html", "files_dup" ]
     ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"____init_____8py.html#ac5224249965707f756f5b662d6e83e52"
+"____init_____8py_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['core_8',['core',['../namespacematerialxocio_1_1core.html',1,'materialxocio']]],
-  ['genociodefinitions_9',['genOCIODefinitions',['../namespacematerialxocio_1_1gen_o_c_i_o_definitions.html',1,'materialxocio']]]
+  ['for_20materialx_0',['OCIO Utilities for MaterialX',['../md__2_users_2bernardkwok_2work_2materialxocio_2_r_e_a_d_m_e.html',1,'']]]
 ];

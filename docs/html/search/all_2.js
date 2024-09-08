@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['hastextureresources_7',['hasTextureResources',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a24f82e64edc8fcd0fdfb7e231a0dd4e9',1,'materialxocio::core::OCIOMaterialaxGenerator']]]
+  ['dependencies_0',['Dependencies',['../md__2_users_2bernardkwok_2work_2materialxocio_2_r_e_a_d_m_e.html#autotoc_md3',1,'']]],
+  ['documentation_1',['Documentation',['../md__2_users_2bernardkwok_2work_2materialxocio_2_r_e_a_d_m_e.html#autotoc_md5',1,'']]]
 ];

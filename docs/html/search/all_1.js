@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['generatematerialxdefinition_3',['generateMaterialXDefinition',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a0eed5fcad257c32b8df4cb348cb4803b',1,'materialxocio::core::OCIOMaterialaxGenerator']]],
-  ['generateocio_4',['generateOCIO',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a6ad8b82e723f7e4a657df3113e2a5069',1,'materialxocio::core::OCIOMaterialaxGenerator']]],
-  ['generateshadercode_5',['generateShaderCode',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a9deb59e2fbba91b6143d706f9c632f44',1,'materialxocio::core::OCIOMaterialaxGenerator']]],
-  ['getbuiltinconfigs_6',['getBuiltinConfigs',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#adcd5031f425d027111d50b44221a2098',1,'materialxocio::core::OCIOMaterialaxGenerator']]]
+  ['command_20line_20utilities_0',['Command Line Utilities',['../md__2_users_2bernardkwok_2work_2materialxocio_2_r_e_a_d_m_e.html#autotoc_md4',1,'']]],
+  ['createcolor3variant_1',['createColor3Variant',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1',1,'materialxocio::core::OCIOMaterialaxGenerator']]],
+  ['creatematerialximplementation_2',['createMaterialXImplementation',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a1e97821b737bf68bd3ec8dfbfab89413',1,'materialxocio::core::OCIOMaterialaxGenerator']]],
+  ['createtransformname_3',['createTransformName',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ad96ecf7a41e5d670df76a7df3cf4e854',1,'materialxocio::core::OCIOMaterialaxGenerator']]]
 ];
