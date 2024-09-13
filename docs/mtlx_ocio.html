@@ -15157,7 +15157,7 @@ The longer term MaterialX aim is to generate functional node graphs. This book w
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[22]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[43]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Package install</span>
@@ -15186,7 +15186,7 @@ The longer term MaterialX aim is to generate functional node graphs. This book w
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[23]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[44]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Import OCIO package</span>
@@ -15241,7 +15241,7 @@ MaterialX version: 1.39.0
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[24]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[45]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Get the OCIO built in configs</span>
@@ -15270,7 +15270,7 @@ MaterialX version: 1.39.0
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[25]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[46]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Create a dictionary of configs</span>
@@ -15346,7 +15346,7 @@ Built-in config: studio-config-v2.1.0_aces-v1.3_ocio-v2.3
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[26]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[47]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">acesCgConfigPath</span> <span class="o">=</span> <span class="s1">&#39;ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1&#39;</span>
@@ -15400,7 +15400,7 @@ Built-in config: studio-config-v2.1.0_aces-v1.3_ocio-v2.3
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[27]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[48]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display_markdown</span>
@@ -15785,7 +15785,7 @@ Any color space information can still be passed as meta-data to the code generat
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[28]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[49]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generateShaderCode</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">sourceColorSpace</span><span class="p">,</span> <span class="n">destColorSpace</span><span class="p">,</span> <span class="n">language</span><span class="p">):</span>
@@ -15802,6 +15802,7 @@ Any color space information can still be passed as meta-data to the code generat
 
     <span class="n">gpuProcessor</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">processor</span><span class="p">:</span>
+        <span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">getOptimizedProcessor</span><span class="p">(</span><span class="n">OCIO</span><span class="o">.</span><span class="n">OPTIMIZATION_ALL</span><span class="p">)</span> 
         <span class="n">gpuProcessor</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">getDefaultGPUProcessor</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">gpuProcessor</span><span class="p">:</span>
         <span class="n">shaderDesc</span> <span class="o">=</span> <span class="n">OCIO</span><span class="o">.</span><span class="n">GpuShaderDesc</span><span class="o">.</span><span class="n">CreateShaderDesc</span><span class="p">()</span>
@@ -16132,7 +16133,7 @@ descriptor via the <code>GpuShaderDesc.getTextures()</code> iterator.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[29]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[50]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">createTransformName</span><span class="p">(</span><span class="n">sourceSpace</span><span class="p">,</span> <span class="n">targetSpace</span><span class="p">,</span> <span class="n">typeName</span><span class="p">):</span> 
@@ -16159,6 +16160,7 @@ descriptor via the <code>GpuShaderDesc.getTextures()</code> iterator.</p>
         <span class="k">return</span> <span class="n">shaderCode</span><span class="p">,</span> <span class="n">textureCount</span>
 
     <span class="k">if</span> <span class="n">processor</span><span class="p">:</span>
+        <span class="n">processor</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">getOptimizedProcessor</span><span class="p">(</span><span class="n">OCIO</span><span class="o">.</span><span class="n">OPTIMIZATION_ALL</span><span class="p">)</span>
         <span class="n">gpuProcessor</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">getDefaultGPUProcessor</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">gpuProcessor</span><span class="p">:</span>
             <span class="n">shaderDesc</span> <span class="o">=</span> <span class="n">OCIO</span><span class="o">.</span><span class="n">GpuShaderDesc</span><span class="o">.</span><span class="n">CreateShaderDesc</span><span class="p">()</span>
@@ -16202,7 +16204,7 @@ while the second adds additional function and resources. Note that we maintain u
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[30]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[51]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sourceColorSpace</span> <span class="o">=</span> <span class="s1">&#39;ACES2065-1&#39;</span> <span class="c1"># &quot;acescg&quot;</span>
@@ -16279,7 +16281,7 @@ while the second adds additional function and resources. Note that we maintain u
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[31]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[52]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sourceColorSpace</span> <span class="o">=</span> <span class="s1">&#39;ACEScc&#39;</span> <span class="c1"># &quot;acescg&quot;</span>
@@ -16436,7 +16438,7 @@ the following code.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[32]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[53]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Scan through all the color spaces on the configs to check for texture resource usage.</span>
@@ -16479,10 +16481,6 @@ the following code.</p>
 - Transform &#34;ADX16&#34; to &#34;lin_rec709&#34; requires 1 texture resources
 - Transform &#34;CanonLog2 CinemaGamut D55&#34; to &#34;lin_rec709&#34; requires 1 texture resources
 - Transform &#34;CanonLog3 CinemaGamut D55&#34; to &#34;lin_rec709&#34; requires 1 texture resources
-- Transform &#34;ADX10&#34; to &#34;lin_rec709&#34; requires 1 texture resources
-- Transform &#34;ADX16&#34; to &#34;lin_rec709&#34; requires 1 texture resources
-- Transform &#34;CanonLog2 CinemaGamut D55&#34; to &#34;lin_rec709&#34; requires 1 texture resources
-- Transform &#34;CanonLog3 CinemaGamut D55&#34; to &#34;lin_rec709&#34; requires 1 texture resources
 </pre>
 </div>
 </div>
@@ -16509,7 +16507,7 @@ the following code.</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[33]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[54]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sourceColorSpace</span> <span class="o">=</span> <span class="s2">&quot;acescg&quot;</span>
@@ -16613,7 +16611,7 @@ An <a href="https://github.com/AcademySoftwareFoundation/OpenColorIO/issues/1851
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[34]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[55]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="n">OCIO</span><span class="o">.</span><span class="n">GpuLanguage</span><span class="o">.</span><span class="n">LANGUAGE_OSL_1</span><span class="p">:</span>
@@ -16771,7 +16769,7 @@ the implementations can become MaterialX node graphs then the definition interfa
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[35]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[56]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generateMaterialXDefinition</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">sourceColorSpace</span><span class="p">,</span> <span class="n">targetColorSpace</span><span class="p">,</span> <span class="n">inputName</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
@@ -16820,7 +16818,7 @@ the implementations can become MaterialX node graphs then the definition interfa
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[36]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[57]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">writeShaderCode</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">transformName</span><span class="p">,</span> <span class="n">extension</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -16858,7 +16856,7 @@ the implementations can become MaterialX node graphs then the definition interfa
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[37]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[58]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">createMaterialXImplementation</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">definition</span><span class="p">,</span> <span class="n">transformName</span><span class="p">,</span> <span class="n">extension</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
@@ -16909,7 +16907,7 @@ the implementations can become MaterialX node graphs then the definition interfa
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[38]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[59]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">writeDocument</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
@@ -16945,7 +16943,7 @@ the implementations can become MaterialX node graphs then the definition interfa
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[39]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[60]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Example to create:</span>
@@ -17068,7 +17066,7 @@ Write target[genosl] source file .\data\mx_acescg_to_lin_rec709_color4.osl
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[40]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[61]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">color4Name</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">getName</span><span class="p">()</span>
@@ -17257,7 +17255,7 @@ is extracted. A GPU processor or CPU processor can be used. (Not sure if there i
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[41]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[62]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generateTransformGraph</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">sourceColorSpace</span><span class="p">,</span> <span class="n">destColorSpace</span><span class="p">):</span>
@@ -17305,7 +17303,7 @@ is extracted. A GPU processor or CPU processor can be used. (Not sure if there i
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[42]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[63]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">groupTransform</span> <span class="o">=</span> <span class="n">generateTransformGraph</span><span class="p">(</span><span class="n">builtinCfgC</span><span class="p">,</span> <span class="n">sourceColorSpace</span><span class="p">,</span> <span class="n">targetColorSpace</span><span class="p">)</span>
