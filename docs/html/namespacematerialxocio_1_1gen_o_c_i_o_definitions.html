@@ -176,79 +176,78 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">   53</span>    <span class="comment"># to a markdown file.</span></div>
 <div class="line"><span class="lineno">   54</span>    generator = mxocio.OCIOMaterialaxGenerator()</div>
 <div class="line"><span class="lineno">   55</span>    configs, aconfig = generator.getBuiltinConfigs()</div>
-<div class="line"><span class="lineno">   56</span>    print(<span class="stringliteral">&#39;------------------------&gt; &#39;</span>, aconfig)</div>
-<div class="line"><span class="lineno">   57</span>    md = generator.printConfigs(configs)</div>
-<div class="line"><span class="lineno">   58</span>    <span class="comment"># Save configuration information as markdown</span></div>
-<div class="line"><span class="lineno">   59</span>    <span class="keywordflow">if</span> <span class="keywordflow">not</span> os.path.exists(outputPath.asString()):</div>
-<div class="line"><span class="lineno">   60</span>        os.makedirs(outputPath.asString())    </div>
-<div class="line"><span class="lineno">   61</span>    configInfoFile = outputPath / mx.FilePath(<span class="stringliteral">&#39;OCIO_configurations.md&#39;</span>)</div>
-<div class="line"><span class="lineno">   62</span>    print(<span class="stringliteral">&#39;Write out OCIO configurations to: &#39;</span> + configInfoFile.asString())</div>
-<div class="line"><span class="lineno">   63</span>    f = open(configInfoFile.asString(), <span class="stringliteral">&#39;w&#39;</span>)</div>
-<div class="line"><span class="lineno">   64</span>    f.write(md)</div>
-<div class="line"><span class="lineno">   65</span> </div>
-<div class="line"><span class="lineno">   66</span>    sourceColorSpace = <span class="stringliteral">&quot;acescg&quot;</span></div>
-<div class="line"><span class="lineno">   67</span>    targetColorSpace = <span class="stringliteral">&#39;lin_rec709&#39;</span></div>
-<div class="line"><span class="lineno">   68</span> </div>
-<div class="line"><span class="lineno">   69</span>    <span class="comment"># All code has the same input name</span></div>
-<div class="line"><span class="lineno">   70</span>    <span class="comment"># It is possible to use a different name than the name used in the generated function (&#39;inPixel&#39;)</span></div>
-<div class="line"><span class="lineno">   71</span>    IN_PIXEL_STRING = <span class="stringliteral">&#39;in&#39;</span></div>
-<div class="line"><span class="lineno">   72</span> </div>
-<div class="line"><span class="lineno">   73</span>    <span class="comment"># Generate MaterialX definitions and implementations for all color spaces</span></div>
-<div class="line"><span class="lineno">   74</span>    <span class="comment"># found in the ACES Cg Config and ACES Studio Config configurations.</span></div>
-<div class="line"><span class="lineno">   75</span>    <span class="keywordflow">for</span> c <span class="keywordflow">in</span> configs:</div>
-<div class="line"><span class="lineno">   76</span>        config = configs[c][0]</div>
-<div class="line"><span class="lineno">   77</span>        <span class="keywordflow">for</span> colorSpace <span class="keywordflow">in</span> config.getColorSpaces():</div>
-<div class="line"><span class="lineno">   78</span>            aliases = colorSpace.getAliases()</div>
-<div class="line"><span class="lineno">   79</span>            trySource = <span class="stringliteral">&#39;&#39;</span></div>
-<div class="line"><span class="lineno">   80</span>            <span class="keywordflow">for</span> alias <span class="keywordflow">in</span> aliases:</div>
-<div class="line"><span class="lineno">   81</span>                <span class="comment"># Get alias if it does not contain a space</span></div>
-<div class="line"><span class="lineno">   82</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39; &#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> alias:</div>
-<div class="line"><span class="lineno">   83</span>                    trySource = alias</div>
-<div class="line"><span class="lineno">   84</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> trySource:</div>
-<div class="line"><span class="lineno">   85</span>                trySource = colorSpace.getName()</div>
-<div class="line"><span class="lineno">   86</span>            <span class="keywordflow">if</span> trySource:</div>
-<div class="line"><span class="lineno">   87</span>                sourceColorSpace = trySource</div>
-<div class="line"><span class="lineno">   88</span> </div>
-<div class="line"><span class="lineno">   89</span>                <span class="comment"># Skip if the source and target are the same</span></div>
-<div class="line"><span class="lineno">   90</span>                <span class="keywordflow">if</span> sourceColorSpace == targetColorSpace:</div>
-<div class="line"><span class="lineno">   91</span>                    <span class="keywordflow">continue</span></div>
-<div class="line"><span class="lineno">   92</span> </div>
-<div class="line"><span class="lineno">   93</span>                print(<span class="stringliteral">&#39;--- Generate transform for source color space:&#39;</span>, trySource, <span class="stringliteral">&#39;---&#39;</span>)</div>
-<div class="line"><span class="lineno">   94</span> </div>
-<div class="line"><span class="lineno">   95</span>                <span class="comment"># Generate source code</span></div>
-<div class="line"><span class="lineno">   96</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> opts.graph:</div>
-<div class="line"><span class="lineno">   97</span>                    definitionDoc = mx.createDocument()</div>
-<div class="line"><span class="lineno">   98</span>                    implDoc = mx.createDocument()</div>
-<div class="line"><span class="lineno">   99</span> </div>
-<div class="line"><span class="lineno">  100</span>                    definition, transformName, code, extension, target = generator.generateOCIO(aconfig, definitionDoc, implDoc, sourceColorSpace, targetColorSpace, <span class="stringliteral">&#39;color4&#39;</span>)</div>
-<div class="line"><span class="lineno">  101</span> </div>
-<div class="line"><span class="lineno">  102</span>                    <span class="comment"># Write the definition, implementation and source code files </span></div>
-<div class="line"><span class="lineno">  103</span>                    <span class="keywordflow">if</span> definition:</div>
-<div class="line"><span class="lineno">  104</span> </div>
-<div class="line"><span class="lineno">  105</span>                        filename = outputPath / mx.FilePath(definition.getName() + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
-<div class="line"><span class="lineno">  106</span>                        print(<span class="stringliteral">&#39;Write MaterialX definition file:&#39;</span>, filename.asString())</div>
-<div class="line"><span class="lineno">  107</span>                        mx.writeToXmlFile(definitionDoc, filename)</div>
-<div class="line"><span class="lineno">  108</span> </div>
-<div class="line"><span class="lineno">  109</span>                        <span class="comment"># Write the implementation document</span></div>
-<div class="line"><span class="lineno">  110</span>                        implFileName = outputPath / mx.FilePath(<span class="stringliteral">&#39;IM_&#39;</span> + transformName + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
-<div class="line"><span class="lineno">  111</span>                        print(<span class="stringliteral">&#39;Write MaterialX implementation file:&#39;</span>, implFileName.asString())</div>
-<div class="line"><span class="lineno">  112</span>                        result = mx.writeToXmlFile(implDoc, implFileName)</div>
-<div class="line"><span class="lineno">  113</span> </div>
-<div class="line"><span class="lineno">  114</span>                        generator.writeShaderCode(outputPath, code, transformName, extension, target)</div>
-<div class="line"><span class="lineno">  115</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  116</span>                    <span class="comment"># Generate node graph</span></div>
-<div class="line"><span class="lineno">  117</span>                    outputType = <span class="stringliteral">&#39;color3&#39;</span></div>
-<div class="line"><span class="lineno">  118</span>                    graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)</div>
-<div class="line"><span class="lineno">  119</span>                    <span class="keywordflow">if</span> graphDoc:</div>
-<div class="line"><span class="lineno">  120</span>                        transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, <span class="stringliteral">&#39;mxgraph_&#39;</span>)</div>
-<div class="line"><span class="lineno">  121</span>                        filename = outputPath / mx.FilePath(transformName + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
-<div class="line"><span class="lineno">  122</span>                        print(<span class="stringliteral">&#39;Write MaterialX node graph definition file:&#39;</span>, filename.asString())</div>
-<div class="line"><span class="lineno">  123</span>                        mx.writeToXmlFile(graphDoc, filename)</div>
-<div class="line"><span class="lineno">  124</span> </div>
-<div class="line"><span class="lineno">  125</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  126</span>                print(<span class="stringliteral">&#39;Could not find suitable color space name to use: &#39;</span>, colorSpace.getName())</div>
+<div class="line"><span class="lineno">   56</span>    md = generator.printConfigs(configs)</div>
+<div class="line"><span class="lineno">   57</span>    <span class="comment"># Save configuration information as markdown</span></div>
+<div class="line"><span class="lineno">   58</span>    <span class="keywordflow">if</span> <span class="keywordflow">not</span> os.path.exists(outputPath.asString()):</div>
+<div class="line"><span class="lineno">   59</span>        os.makedirs(outputPath.asString())    </div>
+<div class="line"><span class="lineno">   60</span>    configInfoFile = outputPath / mx.FilePath(<span class="stringliteral">&#39;OCIO_configurations.md&#39;</span>)</div>
+<div class="line"><span class="lineno">   61</span>    print(<span class="stringliteral">&#39;Write out OCIO configurations to: &#39;</span> + configInfoFile.asString())</div>
+<div class="line"><span class="lineno">   62</span>    f = open(configInfoFile.asString(), <span class="stringliteral">&#39;w&#39;</span>)</div>
+<div class="line"><span class="lineno">   63</span>    f.write(md)</div>
+<div class="line"><span class="lineno">   64</span> </div>
+<div class="line"><span class="lineno">   65</span>    sourceColorSpace = <span class="stringliteral">&quot;acescg&quot;</span></div>
+<div class="line"><span class="lineno">   66</span>    targetColorSpace = <span class="stringliteral">&#39;lin_rec709&#39;</span></div>
+<div class="line"><span class="lineno">   67</span> </div>
+<div class="line"><span class="lineno">   68</span>    <span class="comment"># All code has the same input name</span></div>
+<div class="line"><span class="lineno">   69</span>    <span class="comment"># It is possible to use a different name than the name used in the generated function (&#39;inPixel&#39;)</span></div>
+<div class="line"><span class="lineno">   70</span>    IN_PIXEL_STRING = <span class="stringliteral">&#39;in&#39;</span></div>
+<div class="line"><span class="lineno">   71</span> </div>
+<div class="line"><span class="lineno">   72</span>    <span class="comment"># Generate MaterialX definitions and implementations for all color spaces</span></div>
+<div class="line"><span class="lineno">   73</span>    <span class="comment"># found in the ACES Cg Config and ACES Studio Config configurations.</span></div>
+<div class="line"><span class="lineno">   74</span>    <span class="keywordflow">for</span> c <span class="keywordflow">in</span> configs:</div>
+<div class="line"><span class="lineno">   75</span>        config = configs[c][0]</div>
+<div class="line"><span class="lineno">   76</span>        <span class="keywordflow">for</span> colorSpace <span class="keywordflow">in</span> config.getColorSpaces():</div>
+<div class="line"><span class="lineno">   77</span>            aliases = colorSpace.getAliases()</div>
+<div class="line"><span class="lineno">   78</span>            trySource = <span class="stringliteral">&#39;&#39;</span></div>
+<div class="line"><span class="lineno">   79</span>            <span class="keywordflow">for</span> alias <span class="keywordflow">in</span> aliases:</div>
+<div class="line"><span class="lineno">   80</span>                <span class="comment"># Get alias if it does not contain a space</span></div>
+<div class="line"><span class="lineno">   81</span>                <span class="keywordflow">if</span> <span class="stringliteral">&#39; &#39;</span> <span class="keywordflow">not</span> <span class="keywordflow">in</span> alias:</div>
+<div class="line"><span class="lineno">   82</span>                    trySource = alias</div>
+<div class="line"><span class="lineno">   83</span>            <span class="keywordflow">if</span> <span class="keywordflow">not</span> trySource:</div>
+<div class="line"><span class="lineno">   84</span>                trySource = colorSpace.getName()</div>
+<div class="line"><span class="lineno">   85</span>            <span class="keywordflow">if</span> trySource:</div>
+<div class="line"><span class="lineno">   86</span>                sourceColorSpace = trySource</div>
+<div class="line"><span class="lineno">   87</span> </div>
+<div class="line"><span class="lineno">   88</span>                <span class="comment"># Skip if the source and target are the same</span></div>
+<div class="line"><span class="lineno">   89</span>                <span class="keywordflow">if</span> sourceColorSpace == targetColorSpace:</div>
+<div class="line"><span class="lineno">   90</span>                    <span class="keywordflow">continue</span></div>
+<div class="line"><span class="lineno">   91</span> </div>
+<div class="line"><span class="lineno">   92</span>                print(<span class="stringliteral">&#39;--- Generate transform for source color space:&#39;</span>, trySource, <span class="stringliteral">&#39;---&#39;</span>)</div>
+<div class="line"><span class="lineno">   93</span> </div>
+<div class="line"><span class="lineno">   94</span>                <span class="comment"># Generate source code</span></div>
+<div class="line"><span class="lineno">   95</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> opts.graph:</div>
+<div class="line"><span class="lineno">   96</span>                    definitionDoc = mx.createDocument()</div>
+<div class="line"><span class="lineno">   97</span>                    implDoc = mx.createDocument()</div>
+<div class="line"><span class="lineno">   98</span> </div>
+<div class="line"><span class="lineno">   99</span>                    definition, transformName, code, extension, target = generator.generateOCIO(aconfig, definitionDoc, implDoc, sourceColorSpace, targetColorSpace, <span class="stringliteral">&#39;color4&#39;</span>)</div>
+<div class="line"><span class="lineno">  100</span> </div>
+<div class="line"><span class="lineno">  101</span>                    <span class="comment"># Write the definition, implementation and source code files </span></div>
+<div class="line"><span class="lineno">  102</span>                    <span class="keywordflow">if</span> definition:</div>
+<div class="line"><span class="lineno">  103</span> </div>
+<div class="line"><span class="lineno">  104</span>                        filename = outputPath / mx.FilePath(definition.getName() + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
+<div class="line"><span class="lineno">  105</span>                        print(<span class="stringliteral">&#39;Write MaterialX definition file:&#39;</span>, filename.asString())</div>
+<div class="line"><span class="lineno">  106</span>                        mx.writeToXmlFile(definitionDoc, filename)</div>
+<div class="line"><span class="lineno">  107</span> </div>
+<div class="line"><span class="lineno">  108</span>                        <span class="comment"># Write the implementation document</span></div>
+<div class="line"><span class="lineno">  109</span>                        implFileName = outputPath / mx.FilePath(<span class="stringliteral">&#39;IM_&#39;</span> + transformName + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
+<div class="line"><span class="lineno">  110</span>                        print(<span class="stringliteral">&#39;Write MaterialX implementation file:&#39;</span>, implFileName.asString())</div>
+<div class="line"><span class="lineno">  111</span>                        result = mx.writeToXmlFile(implDoc, implFileName)</div>
+<div class="line"><span class="lineno">  112</span> </div>
+<div class="line"><span class="lineno">  113</span>                        generator.writeShaderCode(outputPath, code, transformName, extension, target)</div>
+<div class="line"><span class="lineno">  114</span>                <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  115</span>                    <span class="comment"># Generate node graph</span></div>
+<div class="line"><span class="lineno">  116</span>                    outputType = <span class="stringliteral">&#39;color3&#39;</span></div>
+<div class="line"><span class="lineno">  117</span>                    graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)</div>
+<div class="line"><span class="lineno">  118</span>                    <span class="keywordflow">if</span> graphDoc:</div>
+<div class="line"><span class="lineno">  119</span>                        transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, <span class="stringliteral">&#39;mxgraph_&#39;</span>)</div>
+<div class="line"><span class="lineno">  120</span>                        filename = outputPath / mx.FilePath(transformName + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
+<div class="line"><span class="lineno">  121</span>                        print(<span class="stringliteral">&#39;Write MaterialX node graph definition file:&#39;</span>, filename.asString())</div>
+<div class="line"><span class="lineno">  122</span>                        mx.writeToXmlFile(graphDoc, filename)</div>
+<div class="line"><span class="lineno">  123</span> </div>
+<div class="line"><span class="lineno">  124</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  125</span>                print(<span class="stringliteral">&#39;Could not find suitable color space name to use: &#39;</span>, colorSpace.getName())</div>
+<div class="line"><span class="lineno">  126</span> </div>
 <div class="line"><span class="lineno">  127</span> </div>
-<div class="line"><span class="lineno">  128</span> </div>
 </div><!-- fragment -->
 </div>
 </div>

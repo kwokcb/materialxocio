@@ -8,6 +8,7 @@ ACES Cg Config` and `ACES Studio Config` configurations.
 
 import PyOpenColorIO as OCIO
 import MaterialX as mx
+import re
 
 class OCIOMaterialaxGenerator():
     '''
@@ -319,22 +320,31 @@ class OCIOMaterialaxGenerator():
         Returns a MaterialX document containing a functional nodegraph and nodedef pair.
         '''
         groupTransform = self.generateTransformGraph(config, sourceColorSpace, targetColorSpace)
-        result = f'{groupTransform}'
-        print('GROUP TRANSFOR: ', result)
 
         # To add. Proper testing of unsupported transforms...
         invalidTransforms = [ OCIO.TransformType.TRANSFORM_TYPE_LUT3D, OCIO.TransformType.TRANSFORM_TYPE_LUT1D, 
-                            OCIO.TransformType.TRANSFORM_TYPE_RANGE, 
-                            OCIO.TransformType.TRANSFORM_TYPE_GRADING_PRIMARY ]
+                              OCIO.TransformType.TRANSFORM_TYPE_GRADING_PRIMARY ]
 
         # Create a document, a nodedef and a functional graph.
         graphDoc = mx.createDocument()
         outputType = 'color3'
         xformName = sourceColorSpace + '_to_' + targetColorSpace + '_' + outputType
+        
         nd = graphDoc.addNodeDef('ND_' + xformName )
         nd.setAttribute('node', xformName)
         ndInput = nd.addInput('in', 'color3')
         ndInput.setValue([0.0, 0.0, 0.0], 'color3')
+        docString = f'Generated color space {sourceColorSpace} to {targetColorSpace} transform.'
+        result = f'{groupTransform}'
+        # Replace '<' and '>' with '()' and ')'
+        result = result.replace('<', '(')
+        result = result.replace('>', ')')
+        result = re.sub(r'[\r\n]+', '', result)
+
+        print(result)
+        docString = docString + '. OCIO Transforms: ' + result 
+        nd.setDocString(docString)
+
         ng = graphDoc.addNodeGraph('NG_' + xformName)
         ng.setAttribute('nodedef', nd.getName())
         convertNode = ng.addNode('convert', 'asVec', 'vector3')

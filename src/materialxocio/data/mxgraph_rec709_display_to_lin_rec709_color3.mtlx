@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_rec709_display_to_lin_rec709_color3" node="rec709_display_to_lin_rec709_color3">
+  <nodedef name="ND_rec709_display_to_lin_rec709_color3" node="rec709_display_to_lin_rec709_color3" doc="Generated color space rec709_display to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (ExponentTransform direction=forward, value=2.4 2.4 2.4 1, style=pass_thru))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>

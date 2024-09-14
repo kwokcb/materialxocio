@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_srgb_ap1_to_lin_rec709_color3" node="srgb_ap1_to_lin_rec709_color3">
+  <nodedef name="ND_srgb_ap1_to_lin_rec709_color3" node="srgb_ap1_to_lin_rec709_color3" doc="Generated color space srgb_ap1 to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (ExponentWithLinearTransform direction=forward, gamma=2.4 2.4 2.4 1, offset=0.055 0.055 0.055 0, style=linear)        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=1.705050992657976 -0.6217921206570087 -0.0832588720009817 0 -0.1302564175070429 1.140804736575408 -0.0105483190683572 0 -0.02400335680461799 -0.1289689760649713 1.152972332869586 0 0 0 0 1, offset=0 0 0 0))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>

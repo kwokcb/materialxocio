@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_acescc_ap1_to_lin_rec709_color3" node="acescc_ap1_to_lin_rec709_color3">
+  <nodedef name="ND_acescc_ap1_to_lin_rec709_color3" node="acescc_ap1_to_lin_rec709_color3" doc="Generated color space acescc_ap1 to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (RangeTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, minInValue=-0.36, maxInValue=1.5, minOutValue=0, maxOutValue=1)        (Lut1DTransform direction=forward, fileoutdepth=unknown, interpolation=linear, inputhalf=0, outputrawhalf=0, hueadjust=0, length=4096, minrgb=[-5.69976e-07 -5.69976e-07 -5.69976e-07], maxrgb=[96617.7 96617.7 96617.7])        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=0.6954522413574519 0.1406786964702942 0.1638690621722541 0 0.04479456337203772 0.8596711184564216 0.0955343181715404 0 -0.005525882558113544 0.004025210305978659 1.001500672252135 0 0 0 0 1, offset=0 0 0 0)        (RangeTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, minInValue=0, minOutValue=0)        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=2.52168618674388 -1.13413098823972 -0.387555198504164 0 -0.276479914229922 1.37271908766826 -0.09623917343833401 0 -0.0153780649660342 -0.152975335867399 1.16835340083343 0 0 0 0 1, offset=0 0 0 0))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>
