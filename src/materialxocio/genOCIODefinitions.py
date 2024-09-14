@@ -108,7 +108,7 @@ def main():
                         # Write the implementation document
                         implFileName = outputPath / mx.FilePath('IM_' + transformName + '.' + 'mtlx')
                         print('Write MaterialX implementation file:', implFileName.asString())
-                        result = mx.writeToXmlFile(implDoc, idmplFileName)
+                        result = mx.writeToXmlFile(implDoc, implFileName)
 
                         generator.writeShaderCode(outputPath, code, transformName, extension, target)
                 else:

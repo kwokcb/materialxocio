@@ -8,8 +8,12 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
+    <power name="exponent" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="float" value="2.2, 2.2, 2.2" />
+    </power>
     <convert name="asColor" type="color3">
-      <input name="in" type="vector3" nodename="asVec" />
+      <input name="in" type="vector3" nodename="exponent" />
     </convert>
     <output name="out" type="color3" nodename="asColor" />
   </nodegraph>
