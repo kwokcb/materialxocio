@@ -644,10 +644,10 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  376</span>                <span class="keywordflow">if</span> previousNode:            </div>
 <div class="line"><span class="lineno">  377</span>                    inInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, previousNode)</div>
 <div class="line"><span class="lineno">  378</span>                <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  379</span>                    <span class="keywordflow">if</span> i==0:</div>
+<div class="line"><span class="lineno">  379</span>                    <span class="comment">#if i==0:</span></div>
 <div class="line"><span class="lineno">  380</span>                        inInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asVec&#39;</span>)</div>
-<div class="line"><span class="lineno">  381</span>                    <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  382</span>                        inInput.setValue([0.0, 0.0, 0.0], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><span class="lineno">  381</span>                    <span class="comment">#else:</span></div>
+<div class="line"><span class="lineno">  382</span>                    <span class="comment">#    inInput.setValue([0.0, 0.0, 0.0], &#39;vector3&#39;)</span></div>
 <div class="line"><span class="lineno">  383</span> </div>
 <div class="line"><span class="lineno">  384</span>                <span class="comment"># Set matrix value</span></div>
 <div class="line"><span class="lineno">  385</span>                matInput = matrixNode.addInput(<span class="stringliteral">&#39;mat&#39;</span>, <span class="stringliteral">&#39;matrix33&#39;</span>)</div>
