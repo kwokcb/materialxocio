@@ -376,10 +376,10 @@ class OCIOMaterialaxGenerator():
                 if previousNode:            
                     inInput.setAttribute('nodename', previousNode)
                 else:
-                    if i==0:
+                    #if i==0:
                         inInput.setAttribute('nodename', 'asVec')
-                    else:
-                        inInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                    #else:
+                    #    inInput.setValue([0.0, 0.0, 0.0], 'vector3')
 
                 # Set matrix value
                 matInput = matrixNode.addInput('mat', 'matrix33')

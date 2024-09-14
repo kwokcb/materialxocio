@@ -9,7 +9,7 @@
       <input name="in" type="color3" interfacename="in" />
     </convert>
     <transform name="matrixTransform" type="vector3">
-      <input name="in" type="vector3" value="0, 0, 0" />
+      <input name="in" type="vector3" nodename="asVec" />
       <input name="mat" type="matrix33" value="0.6954522413574519, 0.14067869647029416, 0.16386906217225405, 0.044794563372037716, 0.8596711184564216, 0.0955343181715404, -0.005525882558113544, 0.0040252103059786595, 1.001500672252135" />
     </transform>
     <transform name="matrixTransform2" type="vector3">
