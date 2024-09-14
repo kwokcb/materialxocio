@@ -8,6 +8,7 @@ ACES Cg Config` and `ACES Studio Config` configurations.
 
 import PyOpenColorIO as OCIO
 import MaterialX as mx
+import re
 
 class OCIOMaterialaxGenerator():
     '''
@@ -67,11 +68,15 @@ class OCIOMaterialaxGenerator():
 
         return title + rows
 
-    def createTransformName(self, sourceSpace, targetSpace, typeName):
+    def createTransformName(self, sourceSpace, targetSpace, typeName, prefix = 'mx_'):
         '''
         Create a transform name from a source and target color space and a type name.
+        @param sourceSpace: The source color space.
+        @param targetSpace: The target color space.
+        @param typeName: The type name.
+        @param prefix: The prefix for the transform name. Default is 'mx_'.
         '''        
-        transformFunctionName = "mx_" + mx.createValidName(sourceSpace) + "_to_" + mx.createValidName(targetSpace) + "_" + typeName 
+        transformFunctionName = prefix + mx.createValidName(sourceSpace) + "_to_" + mx.createValidName(targetSpace) + "_" + typeName 
         return transformFunctionName
 
     def setShaderDescriptionParameters(self, shaderDesc, sourceSpace, targetSpace, typeName):
@@ -125,6 +130,33 @@ class OCIOMaterialaxGenerator():
                         print(err)
         
         return shaderCode, textureCount
+    
+    def generateTransformGraph(self, config, sourceColorSpace, destColorSpace):
+        '''
+        Generate the group of transforms required to go from a source color space to a destination color space.
+        The group of transforms is output from an optimized OCIO processor. 
+        @param config: The OCIO configuration.
+        @param sourceColorSpace: The source color space.
+        @param destColorSpace: The destination color space.
+        @return: The group of transforms.
+        '''
+        if not config:
+            return None
+
+        # Create a processor for a pair of colorspaces (namely to go to linear)
+        processor = None
+        groupTransform = None
+        try:
+            processor = config.getProcessor(sourceColorSpace, destColorSpace)
+        except:
+            #print('Failed to get processor for: %s -> %s' % (sourceColorSpace, destColorSpace))
+            return groupTransform
+
+        if processor:
+            processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
+            groupTransform = processor.createGroupTransform()
+        
+        return groupTransform    
 
     def hasTextureResources(self, configs, targetColorSpace, language):
         '''
@@ -276,6 +308,156 @@ class OCIOMaterialaxGenerator():
                 self.createMaterialXImplementation(sourceColorSpace, targetColorSpace, implDoc, definition, transformName, extension, target)
 
         return definition, transformName, code, extension, target     
+    
+    def generateOCIOGraph(self, config, sourceColorSpace = 'acescg', targetColorSpace = 'lin_rec709',
+                          type='color3'):
+        '''
+        Generate a MaterialX nodegraph for a given color space transform.
+        @param config: The OCIO configuration.
+        @param sourceColorSpace: The source color space.
+        @param targetColorSpace: The destination color space.
+        @param type: The type of the transform.
+        Returns a MaterialX document containing a functional nodegraph and nodedef pair.
+        '''
+        groupTransform = self.generateTransformGraph(config, sourceColorSpace, targetColorSpace)
+
+        # To add. Proper testing of unsupported transforms...
+        invalidTransforms = [ OCIO.TransformType.TRANSFORM_TYPE_LUT3D, OCIO.TransformType.TRANSFORM_TYPE_LUT1D, 
+                              OCIO.TransformType.TRANSFORM_TYPE_GRADING_PRIMARY ]
+
+        # Create a document, a nodedef and a functional graph.
+        graphDoc = mx.createDocument()
+        outputType = 'color3'
+        xformName = sourceColorSpace + '_to_' + targetColorSpace + '_' + outputType
+        
+        nd = graphDoc.addNodeDef('ND_' + xformName )
+        nd.setAttribute('node', xformName)
+        ndInput = nd.addInput('in', 'color3')
+        ndInput.setValue([0.0, 0.0, 0.0], 'color3')
+        docString = f'Generated color space {sourceColorSpace} to {targetColorSpace} transform.'
+        result = f'{groupTransform}'
+        # Replace '<' and '>' with '()' and ')'
+        result = result.replace('<', '(')
+        result = result.replace('>', ')')
+        result = re.sub(r'[\r\n]+', '', result)
+
+        print(result)
+        docString = docString + '. OCIO Transforms: ' + result 
+        nd.setDocString(docString)
+
+        ng = graphDoc.addNodeGraph('NG_' + xformName)
+        ng.setAttribute('nodedef', nd.getName())
+        convertNode = ng.addNode('convert', 'asVec', 'vector3')
+        converInput = convertNode.addInput('in', 'color3')
+        converInput.setInterfaceName('in')
+
+        #print(f'Transform from: {sourceColorSpace} to {targetColorSpace}')
+        if not groupTransform:
+            #print(f'No group transform found for the color space transform: {sourceColorSpace} to {targetColorSpace}')
+            return None
+        #print(f'Number of transforms: {groupTransform.__len__()}')
+        previousNode = None
+
+        # Iterate and create appropriate nodes and connections
+        for i in range(groupTransform.__len__()):
+            transform = groupTransform.__getitem__(i)
+            # Get type of transform
+            transformType = transform.getTransformType()
+            if transformType in invalidTransforms:
+                print(f'- Transform[{i}]: {transformType} contains an unsupported transform type')
+                continue
+
+            #print(f'- Transform[{i}]: {transformType}')   
+            if transformType == OCIO.TransformType.TRANSFORM_TYPE_MATRIX:
+                matrixNode = ng.addNode('transform', ng.createValidChildName(f'matrixTransform'), 'vector3')
+
+                # Route output from previous node as input of current node
+                inInput = matrixNode.addInput('in', 'vector3')
+                if previousNode:            
+                    inInput.setAttribute('nodename', previousNode)
+                else:
+                    #if i==0:
+                        inInput.setAttribute('nodename', 'asVec')
+                    #else:
+                    #    inInput.setValue([0.0, 0.0, 0.0], 'vector3')
+
+                # Set matrix value
+                matInput = matrixNode.addInput('mat', 'matrix33')
+                matrixValue = transform.getMatrix()
+                # Extract 3x3 matrix from 4x4 matrix
+                matrixValue = matrixValue[0:3] + matrixValue[4:7] + matrixValue[8:11]
+                matrixValue = ', '.join([str(x) for x in matrixValue])
+                #print('  - Matrix:', matrixValue)
+                matInput.setAttribute('value', matrixValue)        
+
+                # Add offset value - TODO
+                offsetValue = transform.getOffset()
+                offsetValue = ', '.join([str(x) for x in offsetValue])
+                #print('  - Offset:', offsetValue)
+                # Add a add vector3 to graph
+
+                previousNode = matrixNode.getName()
+            
+            # TODO: Handle other transform types
+            elif transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT or transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR:
+
+                hasOffset = (transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR)
+
+                #print(f'- Transform[{i}]: {transformType} support has not been implemented yet')
+                exponentNode = ng.addNode('power', ng.createValidChildName(f'exponent'), 'vector3')
+                exponentInput = exponentNode.addInput('in1', 'vector3')
+                if previousNode:
+                    exponentInput.setAttribute('nodename', previousNode)
+                else:
+                    if i==0:
+                        exponentInput.setAttribute('nodename', 'asVec')
+                    else:
+                        exponentInput.setValue([0.0, 0.0, 0.0], 'vector3')
+
+                exponentInput2 = exponentNode.addInput('in2', 'vector3')
+                exponentInput2Value = None
+                if not hasOffset:
+                    exponentInput2Value = transform.getValue()
+                else:
+                    exponentInput2Value = transform.getGamma()
+                # Only want the first 3 values in the array
+                exponentInput2Value = exponentInput2Value[0:3]
+                exponentInput2.setValue(exponentInput2Value, 'float')
+
+                previousNode = exponentNode.getName()
+
+                if hasOffset:
+                    # Add offset
+                    offsetNode = ng.addNode('add', ng.createValidChildName(f'offset'), 'vector3')
+                    offsetInput2 = offsetNode.addInput('in2', 'vector3')
+                    offsetInput2.setNodeName(exponentNode.getName())
+                    offsetInput = offsetNode.addInput('in1', 'vector3')
+                    offsetValue = transform.getOffset()
+                    # Only want the first 3 values in the array
+                    offsetValue = offsetValue[0:3]
+                    offsetInput.setValue(offsetValue, 'vector3')
+
+                    previousNode = offsetNode.getName()
+
+            else:
+                print(f'- Transform[{i}]: {transformType} support has not been implemented yet')
+                continue
+
+
+        # Create an output for the last node if any
+        convertNode2 = ng.addNode('convert', 'asColor', 'color3')
+        converInput2 = convertNode2.addInput('in', 'vector3')
+        if previousNode:
+            converInput2.setAttribute('nodename', previousNode)
+        else:
+            # Pass-through
+            #print('No transforms applied. Transform is a pass-through.')
+            converInput2.setAttribute('nodename', 'asVec')
+
+        out = ng.addOutput(ng.createValidChildName('out'), 'color3')
+        out.setAttribute('nodename', 'asColor')
+
+        return graphDoc
 
     def createColor3Variant(self, definition, definitionDoc, IN_PIXEL_STRING = 'in'):
         '''
@@ -287,7 +469,7 @@ class OCIOMaterialaxGenerator():
         color3Def.copyContentFrom(definition)
         c3input = color3Def.getInput(IN_PIXEL_STRING)
         c3input.setType('color3')
-        c3input.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
+        c3input.setValue([0.0, 0.0, 0.0], 'color3')
             
         ngName = color3Def.getName().replace('ND_', 'NG_')
         ng = definitionDoc.addNodeGraph(ngName)
