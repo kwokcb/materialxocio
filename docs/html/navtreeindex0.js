@@ -35,7 +35,7 @@ var NAVTREEINDEX0 =
 "functions_func.html":[2,2,1],
 "gen_o_c_i_o_definitions_8py_source.html":[3,0,0,0,2],
 "index.html":[],
-"md__d_1_2_work_2materialx_2materialxocio_2_r_e_a_d_m_e.html":[0],
+"index.html":[0],
 "namespacematerialxocio_1_1core.html":[1,0,0,0],
 "namespacematerialxocio_1_1gen_o_c_i_o_definitions.html":[1,0,0,1],
 "namespaces.html":[1,0],
