@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <nodedef name="ND_srgb_texture_to_lin_rec709_color3" node="srgb_texture_to_lin_rec709_color3">
+    <output name="out" type="color3" />
+    <input name="in" type="color3" value="0, 0, 0" />
+  </nodedef>
+  <nodegraph name="NG_srgb_texture_to_lin_rec709_color3" nodedef="ND_srgb_texture_to_lin_rec709_color3">
+    <convert name="asVec" type="vector3">
+      <input name="in" type="color3" interfacename="in" />
+    </convert>
+    <convert name="asColor" type="color3">
+      <input name="in" type="vector3" nodename="asVec" />
+    </convert>
+    <output name="out" type="color3" nodename="asColor" />
+  </nodegraph>
+</materialx>

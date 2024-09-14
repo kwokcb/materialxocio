@@ -2,6 +2,8 @@
 
 This site contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.
 
+Note that Functional Nodegraph generation is currently in it's early stages pending the result of `NanoColor` support.
+
 ### Repository
 
 The <code>Github</code> repository is available <a href="https://github.com/kwokcb/materialxocio">here</a>
@@ -14,7 +16,7 @@ To install the utilities, clone the repository and run the following command:
 pip install .
 ```
 
-The distribution will be available on PyPi in the near future as `materialxocio`
+The distribution will be available on PyPi in the near future as `materialxocio`.
 
 ### Dependencies
 
@@ -23,16 +25,22 @@ The utilities require the following dependencies:
 - OpenColorIO 2.2 and above
 - MaterialX 1.38.9 and above
 
+The latest version tested with is MaterialX 1.39.1 and OpenColorIO 2.3.2
+
 ### Command Line Utilities
 
 The repository contains the following command line utilities:
 
 - generateOCIODefinitions: Generates MaterialX node definitions from the default ACES Cg config for 
-color transforms without LUTs. Each transform is from the source colorspace to lin_rec709. Each definition consists of:
+color transforms without LUTs. Each transform is from the source colorspace to lin_rec709. 
+- If source code implementations are generated, each definition consists of:
   - A node definition MaterialX file
   - A node implementation MaterialX file
   - Source code in the GLSL shading language. Note that options to use other OCIO
     provided languages can be added.
+- If node graph implementations are generate, then a single file consisting of:
+  - A `nodedef` 
+  - A functional `nodegraph` with reference to the `nodedef` interface.
 
 ### Documentation 
 

@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: materialxocio
-Version: 0.1.39.0
+Version: 0.1.39.0.1
 Summary: Utilities for MaterialX 1.38.9 and OCIO 2.2 and above
 Author-email: Bernard Kwok <kwokcb@gmail.com>
 License: MIT License
@@ -42,7 +42,11 @@ Requires-Dist: opencolorio>=2.2.0
 
 ## OCIO Utilities for MaterialX
 
-This repository contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.
+This site contains a set of utilities for working with OpenColorIO and MaterialX. The utilities are written in Python and are designed to be used as standalone scripts or as part of a larger pipeline.
+
+### Repository
+
+The <code>Github</code> repository is available <a href="https://github.com/kwokcb/materialxocio">here</a>
 
 ### Installation
 
@@ -54,14 +58,14 @@ pip install .
 
 The distribution will be available on PyPi in the near future as `materialxocio`
 
-## Dependencies
+### Dependencies
 
 The utilities require the following dependencies:
 
 - OpenColorIO 2.2 and above
 - MaterialX 1.38.9 and above
 
-## Command Line Utilities
+### Command Line Utilities
 
 The repository contains the following command line utilities:
 
@@ -72,6 +76,12 @@ color transforms without LUTs. Each transform is from the source colorspace to l
   - Source code in the GLSL shading language. Note that options to use other OCIO
     provided languages can be added.
 
-## Notebooks
+### Documentation 
 
-- A background describing the usage of the OCIO package can be found <a href="./docs/
+#### API
+
+API documentation can be found <a href="https://kwokcb.github.io/materialxocio/docs/html/index.html">here</a>
+
+#### Notebooks
+
+A background describing the usage of the OCIO package can be found <a href="https://kwokcb.github.io/materialxocio/docs/mtlx_ocio.html">here</a>

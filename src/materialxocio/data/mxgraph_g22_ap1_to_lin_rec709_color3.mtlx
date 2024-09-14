@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <nodedef name="ND_g22_ap1_to_lin_rec709_color3" node="g22_ap1_to_lin_rec709_color3">
+    <output name="out" type="color3" />
+    <input name="in" type="color3" value="0, 0, 0" />
+  </nodedef>
+  <nodegraph name="NG_g22_ap1_to_lin_rec709_color3" nodedef="ND_g22_ap1_to_lin_rec709_color3">
+    <convert name="asVec" type="vector3">
+      <input name="in" type="color3" interfacename="in" />
+    </convert>
+    <transform name="matrixTransform" type="vector3">
+      <input name="in" type="vector3" value="0, 0, 0" />
+      <input name="mat" type="matrix33" value="1.7050509926579756, -0.6217921206570087, -0.0832588720009817, -0.13025641750704287, 1.140804736575408, -0.010548319068357195, -0.02400335680461799, -0.12896897606497126, 1.152972332869586" />
+    </transform>
+    <convert name="asColor" type="color3">
+      <input name="in" type="vector3" nodename="matrixTransform" />
+    </convert>
+    <output name="out" type="color3" nodename="asColor" />
+  </nodegraph>
+</materialx>
