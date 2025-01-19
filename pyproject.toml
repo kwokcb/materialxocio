@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "materialxocio"
-version = "0.1.39.0.1"
+version = "0.1.39.2"
 authors = [
   { name="Bernard Kwok", email="kwokcb@gmail.com" },
 ]
@@ -20,7 +20,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "materialx>=1.38.9",
+    "materialx>=1.39.2",
     "opencolorio>=2.2.0"
 ]
 [tool.setuptools.packages.find]

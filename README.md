@@ -42,6 +42,10 @@ color transforms without LUTs. Each transform is from the source colorspace to l
   - A `nodedef` 
   - A functional `nodegraph` with reference to the `nodedef` interface.
 
+### Build
+
+There are basic build scripts in the <a href="https://github.com/kwokcb/materialxocio/tree/main/utilities/README.md">utilities</a> folder.
+
 ### Documentation 
 
 #### API
