@@ -1,4 +1,6 @@
-# %% [markdown]
+#!/usr/bin/env python
+# coding: utf-8
+
 # ## OCIO and MaterialX
 # 
 # This notebook will cover one workflow of using OCIO to generate code for MaterialX.
@@ -23,7 +25,6 @@
 # 
 # For further OCI there is a fair bit of documentation available with a useful starting place [here](https://opencolorio.readthedocs.io/en/latest/guides/developing/developing.html)
 
-# %% [markdown]
 # ### Setup
 # 
 # OpenColorIO is available as a pre-built Python package on PyPi [here](https://pypi.org/project/opencolorio/)
@@ -43,14 +44,18 @@
 # 
 # For this book, we install from PyPi.
 
-# %%
+# In[1]:
+
+
 # Package install
 #pip install OpenColorIO
 
-# %% [markdown]
+
 # Here we import PyOpenColorIO and MaterialX.
 
-# %%
+# In[2]:
+
+
 # Import OCIO package
 import PyOpenColorIO as OCIO
 import MaterialX as mx
@@ -58,19 +63,22 @@ import MaterialX as mx
 print('OCIO version:', OCIO.GetVersion())
 print('MaterialX version:', mx.getVersionString())
 
-# %% [markdown]
+
 # ### Configurations
 # 
 # As of version 2.2, `ACES Cg Config` and `ACES Studio Config` are packaged with `OCIO`, meaning that they are available to use without having to download them separately. The `getBuildInConfigs()` API is explained [here](https://opencolorio.readthedocs.io/en/latest/releases/ocio_2_2.html)
 
-# %%
+# In[3]:
+
+
 # Get the OCIO built in configs
 registry = OCIO.BuiltinConfigRegistry().getBuiltinConfigs()
 
-# %% [markdown]
+
 # This items return canned be scanned and the appropriate configuration instantiated using `CreateFromBuiltInConfig()` In the following example we built a dictionary of configs along with the available color spaces.
 
-# %%
+# In[4]:
+
 
 # Create a dictionary of configs
 configs = {}
@@ -99,23 +107,26 @@ for config in configs:
     #    print('  -', csname)
 
 
-# %% [markdown]
 # A more direct way to get the desired config is to call `CreateFomFile` with the appropriate built in path. In this case we get the `ACES Cg Config`.`
 
-# %%
+# In[5]:
+
+
 acesCgConfigPath = 'ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1'
 builtinCfgC = OCIO.Config.CreateFromFile(acesCgConfigPath)
 print('Built-in config:', builtinCfgC.getName())
 csnames = builtinCfgC.getColorSpaceNames()
 print('- Number of color spaces: %d' % len(csnames))
 
-# %% [markdown]
+
 # ### Color Spaces
 # 
 # To check what color space identifiers can be used we print out each color space name along with any aliases by calling `getAliases()` on each color space. 
 # 
 
-# %%
+# In[6]:
+
+
 from IPython.display import display_markdown
 
 title = '| Configuration | Color Space | Aliases |\n'
@@ -132,7 +143,7 @@ for c in configs:
 md = '<details><summary>Color Spaces</summary>\n\n' + title + rows + '</details>'
 display_markdown(md, raw=True)
 
-# %% [markdown]
+
 # ### Supported Color Spaces in MaterialX
 # 
 # MaterialX currently uses color space names for :
@@ -146,7 +157,6 @@ display_markdown(md, raw=True)
 # 
 # Further note that only certain **aliases** which are valid MaterialX identifiers are recognized in this context. For example `g18_rec709` is used for color space `Gamma 1.8 Rec.709 - Texture` and `lin_rec709` is used for color space `Linear Rec.709 (sRGB)`.
 
-# %% [markdown]
 # ### OCIO Shader Code Generation
 # 
 # It is possible to generate code color space transforms for certain code generation targets. 
@@ -158,7 +168,9 @@ display_markdown(md, raw=True)
 # 3. Set the appropriate target language
 # 4. Getting the shader code using `getShaderText()`
 
-# %%
+# In[7]:
+
+
 def generateShaderCode(config, sourceColorSpace, destColorSpace, language):
     cshaderCodee = ''
     if not config:
@@ -173,6 +185,7 @@ def generateShaderCode(config, sourceColorSpace, destColorSpace, language):
 
     gpuProcessor = None
     if processor:
+        processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
         gpuProcessor = processor.getDefaultGPUProcessor()
     if gpuProcessor:
         shaderDesc = OCIO.GpuShaderDesc.CreateShaderDesc()
@@ -212,7 +225,7 @@ for c in configs:
 md = '<details><summary>Transform Code for GLSL</summary>\n\n' + title + rows + '</details>'
 display_markdown(md, raw=True)
 
-# %% [markdown]
+
 # ### Integrating OCIO with MaterialX
 # 
 # We will pick an example transform to go over details on mapping from OCIO to MaterialX.
@@ -226,7 +239,6 @@ display_markdown(md, raw=True)
 # Following the current MaterialX convention we use the signature notation:
 # `mx_<sourceName>_to_<targetname>_<type>` where `type` is either `color3` or `color4` for 3 or 4 channel variants.
 
-# %% [markdown]
 # We add in two new utilities:
 # 
 # 1. `createTransformName` which will generate the unique function name
@@ -235,7 +247,9 @@ display_markdown(md, raw=True)
 # These are then used in a new code generation variation called `generateShaderCode2()` which has additionally been modified to return the number of dependent texture resources, which can be queried from the shader 
 # descriptor via the `GpuShaderDesc.getTextures()` iterator.
 
-# %%
+# In[8]:
+
+
 def createTransformName(sourceSpace, targetSpace, typeName): 
     transformFunctionName = "mx_" + mx.createValidName(sourceSpace) + "_to_" + targetSpace + "_" + typeName 
     return transformFunctionName
@@ -260,6 +274,7 @@ def generateShaderCode2(config, sourceColorSpace, destColorSpace, language):
         return shaderCode, textureCount
 
     if processor:
+        processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL)
         gpuProcessor = processor.getDefaultGPUProcessor()
         if gpuProcessor:
             shaderDesc = OCIO.GpuShaderDesc.CreateShaderDesc()
@@ -278,7 +293,6 @@ def generateShaderCode2(config, sourceColorSpace, destColorSpace, language):
     return shaderCode, textureCount
 
 
-# %% [markdown]
 # ### OCIO Resource Dependencies
 # 
 # Resource dependencies is a second major issue to examine.
@@ -290,7 +304,8 @@ def generateShaderCode2(config, sourceColorSpace, destColorSpace, language):
 # 
 # #### Example 1: Self-contained
 
-# %%
+# In[9]:
+
 
 sourceColorSpace = 'ACES2065-1' # "acescg"
 textureCount = 0
@@ -302,10 +317,12 @@ if code:
     code = '```c++\n' + code + '\n```'
     display_markdown(code, raw=True)    
 
-# %% [markdown]
+
 # #### Example 2: Secondary Dependencies 
 
-# %%
+# In[10]:
+
+
 sourceColorSpace = 'ACEScc' # "acescg"
 code, textureCount = generateShaderCode2(builtinCfgC, sourceColorSpace, targetColorSpace, language)
 if code:
@@ -316,7 +333,7 @@ if code:
     md = '<details><summary>Secondary Dependency Sample Code</summary>\n\n' + code + '</details>'
     display_markdown(md, raw=True)
 
-# %% [markdown]
+
 # #### Issues With Texture Resources
 # 
 # From an integration point of view any introduction of texture lookups requires resource declarations in the code. (such as the `uniform sampler2D mx_ACEScc_to_lin_rec709_color4_ocio_lut1d_0Sampler;` sampler declaration).
@@ -330,7 +347,6 @@ if code:
 # For now these can be "skipped" until such time as they are require, or the implementation changes
 # to avoid using these.
 
-# %% [markdown]
 # #### Finding Transforms Using Texture Resources
 # 
 # We can re-iterate through all of the transforms of interest, and find these transforms using
@@ -338,7 +354,9 @@ if code:
 # > Note that the code generation is not necessary but is written this way to 
 # reuse the existing utility `generateShaderCode2`).
 
-# %%
+# In[11]:
+
+
 # Scan through all the color spaces on the configs to check for texture resource usage.
 testedSources = set()
 for c in configs:
@@ -356,14 +374,16 @@ for c in configs:
         if textureCount:
             print('- Transform "%s" to "%s" requires %d texture resources' % (colorSpace.getName(), targetColorSpace, textureCount))
 
-# %% [markdown]
+
 # ### Target Language Support
 # 
 # At time of writing the target languages supported by OCIO and MaterialX differ. This includes non-core support such as `MDL` and current versions of `OSL`. Also as no logical operators are provided as with MaterialX,  targets such as `Vex` which parses and maps MaterialX nodes as operators is not easy to do.
 # 
 # OCIO and MaterialX recently added in `Metal` language support. It is to be checked if there would be any issues with the additional `struct` wrappers required for this language as it is uncommon for MaterialX code generation to call into a `struct` function at the current time.
 
-# %%
+# In[12]:
+
+
 sourceColorSpace = "acescg"
 language = OCIO.GpuLanguage.GPU_LANGUAGE_MSL_2_0
 code, textureCount = generateShaderCode2(builtinCfgC, sourceColorSpace, targetColorSpace, language)
@@ -373,7 +393,7 @@ if code:
     md = '<details><summary>MSL struct usage</summary>\n\n' + code + '</details>'
     display_markdown(md, raw=True)
 
-# %% [markdown]
+
 # Using version 2.3 to access `OSL` there appears to be additional issues with the code
 # generated as additional utility functions may be inserted which are not renamed to avoid collisions.
 # 
@@ -382,7 +402,9 @@ if code:
 # 
 # As `OSL` integrations will generally perform color management outside of the shader, it is to be seen if this is important enough to address.
 
-# %%
+# In[13]:
+
+
 if OCIO.GpuLanguage.LANGUAGE_OSL_1:
     sourceColorSpace = "acescg"
     language = OCIO.GpuLanguage.LANGUAGE_OSL_1
@@ -398,7 +420,7 @@ if OCIO.GpuLanguage.LANGUAGE_OSL_1:
         md = '<details><summary>OSL dependent function / includes code</summary>\n\n' + code + '</details>'
         display_markdown(md, raw=True)
 
-# %% [markdown]
+
 # ### Creating MaterialX Node Definitions / Implementation
 # 
 # Given source code for now, it is still possible to create implementations and node definitions. If in the future
@@ -416,7 +438,9 @@ if OCIO.GpuLanguage.LANGUAGE_OSL_1:
 # 
 # Thie logic is encapsulated in a new `generateMaterialXDefinition()` utility function.
 
-# %%
+# In[14]:
+
+
 def generateMaterialXDefinition(doc, sourceColorSpace, targetColorSpace, inputName, type):
 
     # Create a definition
@@ -441,10 +465,10 @@ def generateMaterialXDefinition(doc, sourceColorSpace, targetColorSpace, inputNa
     return definition
 
 
-# %% [markdown]
 # Another utility called `writeShaderCode()` is used to write the code to file following the "standard" MaterialX naming convention.
 
-# %%
+# In[15]:
+
 
 def writeShaderCode(code, transformName, extension, target):
 
@@ -456,7 +480,6 @@ def writeShaderCode(code, transformName, extension, target):
     f.close()
 
 
-# %% [markdown]
 # The implementation creation logic is encapsulated in a `createMaterialXImplementation()` utility function which appends a new implementation to an existing Document.
 # 
 # The transform name is assumged to be precreated using `createTransformName()`.
@@ -465,7 +488,8 @@ def writeShaderCode(code, transformName, extension, target):
 # 
 # The implementation is associated with an existing node definition which is passed in and a target is explicit set to indicate which shading language (target) the implementation is for. 
 
-# %%
+# In[16]:
+
 
 def createMaterialXImplementation(doc, definition, transformName, extension, target):
     '''
@@ -492,22 +516,26 @@ def createMaterialXImplementation(doc, definition, transformName, extension, tar
 
     return impl
 
-# %% [markdown]
+
 # Finally a small utility is added to write the document to disk.
 
-# %%
+# In[17]:
+
+
 def writeDocument(doc, filename):
     print('Write MaterialX file:', filename.asString())
     mx.writeToXmlFile(doc, filename)
 
-# %% [markdown]
+
 # Using these utilities we: 
 # - Create separate definition and implementation Documents. 
 # - Generate shader code for `GLSL`, `MSL`, and `OSL`` for the same color transform. (`OSL` is available in version 2.3).
 # - Create a new definition for that transform
 # - Create a new implementation for each shader code result
 
-# %%
+# In[18]:
+
+
 # Example to create:
 # - source code for a given transform for 2 shader targets
 # - A definition wrapper for the source
@@ -531,7 +559,7 @@ sourceColorSpace = 'acescg'
 targetColorSpace = 'lin_rec709'
 
 # List of MaterialX target language, source code extensions, and OCIO GPU languages
-generationList = [['genmsl', 'metal', OCIO.GpuLanguage.GPU_LANGUAGE_MSL_2_0],
+generationList = [#['genmsl', 'metal', OCIO.GpuLanguage.GPU_LANGUAGE_MSL_2_0],
                   ['genglsl', 'glsl', OCIO.GpuLanguage.GPU_LANGUAGE_GLSL_4_0] ]
 
 if OCIO.GpuLanguage.LANGUAGE_OSL_1:
@@ -556,34 +584,21 @@ for gen in generationList:
         createMaterialXImplementation(implDoc, definition, transformName, extension, target)
 
 
-# %% [markdown]
 # The resulting MaterialX wrappers are then written to disk as follows:
 
-# %%
+# In[ ]:
 
-# Write the definition document
-filename = mx.FilePath('./data') / mx.FilePath(definition.getName() + '.' + 'mtlx')
-print('Write MaterialX definition file:', filename.asString())
-mx.writeToXmlFile(definitionDoc, filename)
 
-# Write the implementation document
-implFileName = mx.FilePath('./data') / mx.FilePath('IM_' + transformName + '.' + 'mtlx')
-print('Write MaterialX implementation file:', implFileName.asString())
-result = mx.writeToXmlFile(implDoc, implFileName)
 
-# Emit the results for display
-result = mx.writeToXmlString(definitionDoc)
-display_markdown('#### Generated MaterialX Definition\n' + '```xml\n' + result + '```\n', raw=True)
-result = mx.writeToXmlString(implDoc)
-display_markdown('#### Generated MaterialX Implementations\n' + '```xml\n' + result + '```\n', raw=True)
-     
 
-# %% [markdown]
+
 # ### Variant Creation
 # 
 # Given a node definition for the `color4` variant is is possible to create a functional graph and corresponding definition for a `color3` variant. The graph simple convertes from `color3` to `color4` before connecting to the transform and then converts back to `color3` for output.
 
-# %%
+# In[19]:
+
+
 color4Name = definition.getName()
 color3Name = color4Name.replace('color4', 'color3')
 color3Def = definitionDoc.addNodeDef(color3Name)
@@ -621,7 +636,7 @@ filename = mx.FilePath('./data') / mx.FilePath(definition.getName() + '_2.' + 'm
 print('Write MaterialX definition variant file:', filename.asString())
 mx.writeToXmlFile(definitionDoc, filename)
 
-# %% [markdown]
+
 # ### MaterialX Standard Library Inclusion
 # 
 # It is possible to add a new color space transform to the "standard" MaterialX library locations. This can be done for local testing for in some cases when additional search paths are not supported. 
@@ -656,13 +671,137 @@ mx.writeToXmlFile(definitionDoc, filename)
 # 
 # ----
 
-# %% [markdown]
 # ### Future Exploration
 # 
-# At time of writing (August 2024), the NanoColor initiative is underway. As the implementation
-# details with MaterialX become clearer this notebook will be extended to use that library.
+# At time of writing (September 2024), the NanoColor initiative is underway. The current plan is to allow pre-processing of transforms to create MaterialX definitions with graph implementation. See the next section for some unofficial prototyping.
 # 
-# As there is the intent to provide Javascript bindings it will be interesting to see how this will
-# interact with Web libraries and how it can work with the glTF Texture Procedurals extension.
+# As there is the intent to provide Javascript bindings it will be interesting to see how this will interact with Web libraries and how it can work with the glTF Texture Procedurals extension.
 
+# ## NodeGraph Prototype
+# 
+# The following is some prototype code to extract out the list of transforms and 
+# attempt to create corresponding MaterialX nodes. It currently only handles matrix operations.
+# 
+# As a first step instead of extracting out code the list of transforms
+# is extracted. A GPU processor or CPU processor can be used. (Not sure if there is any difference which processor is used). This logic is given in the `generateTransformGraph` utility
+
+# In[20]:
+
+
+def generateTransformGraph(config, sourceColorSpace, destColorSpace):
+    if not config:
+        return None
+
+    # Create a processor for a pair of colorspaces (namely to go to linear)
+    processor = None
+    groupTransform = None
+    try:
+        processor = config.getProcessor(sourceColorSpace, destColorSpace)
+    except:
+        print('Failed to get processor for: %s -> %s' % (sourceColorSpace, destColorSpace))
+        return groupTransform
+
+    if processor:
+        processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
+        groupTransform = processor.createGroupTransform()
+    
+    return groupTransform
+
+
+# Next we use this to extract out the list of transforms and iterate over them to pull out information per transform.
+# 
+# The basic 'template' for creating a new MaterialX definition is a single new `nodedef` with one input and one output. In this case we use `color3` as the input and output type.
+# 
+# For each transform a new corresponding MaterialX node is created. For now the logic only handles matrix tranforms. These are chained together incrementally. All computations work on `vector3` data.
+# 
+# All nodes are encapsulated into a `functional` nodegraph implementation with the appropriate conversion to/from `color3` to `vector3` is performed.
+
+# In[21]:
+
+
+groupTransform = generateTransformGraph(builtinCfgC, sourceColorSpace, targetColorSpace)
+result = f'{groupTransform}'
+display_markdown('#### Extracted Transform\n' + '```xml\n' + result + '```\n', raw=True)
+
+# To add. Proper testing of unsupported transforms...
+invalidTransforms = [ OCIO.TransformType.TRANSFORM_TYPE_LUT3D, OCIO.TransformType.TRANSFORM_TYPE_LUT1D, 
+                     OCIO.TransformType.TRANSFORM_TYPE_RANGE, 
+                     OCIO.TransformType.TRANSFORM_TYPE_GRADING_PRIMARY ]
+
+# Create a document, a nodedef and a functional graph.
+graphDoc = mx.createDocument()
+outputType = 'color3'
+xformName = sourceColorSpace + '_to_' + targetColorSpace + '_' + outputType
+nd = graphDoc.addNodeDef('ND_' + xformName )
+nd.setAttribute('node', xformName)
+ndInput = nd.addInput('in', 'color3')
+ndInput.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
+ng = graphDoc.addNodeGraph('NG_' + xformName)
+ng.setAttribute('nodedef', nd.getName())
+convertNode = ng.addNode('convert', 'asVec', 'vector3')
+converInput = convertNode.addInput('in', 'color3')
+converInput.setInterfaceName('in')
+
+print(f'Transform from: {sourceColorSpace} to {targetColorSpace}')
+print(f'Number of transforms: {groupTransform.__len__()}')
+previousNode = None
+
+# Iterate and create appropriate nodes and connections
+for i in range(groupTransform.__len__()):
+    transform = groupTransform.__getitem__(i)
+    # Get type of transform
+    transformType = transform.getTransformType()
+    if transformType in invalidTransforms:
+        print(f'- Transform[{i}]: {transformType} contains an unsupported transform type')
+        continue
+
+    #print(f'- Transform[{i}]: {transformType}')   
+    if transformType == OCIO.TransformType.TRANSFORM_TYPE_MATRIX:
+        matrixNode = ng.addNode('transform', ng.createValidChildName(f'matrixTransform'), 'vector3')
+
+        # Route output from previous node as input of current node
+        inInput = matrixNode.addInput('in', 'vector3')
+        if previousNode:            
+            inInput.setAttribute('nodename', previousNode)
+        else:
+            if i==0:
+                inInput.setAttribute('nodename', 'asVec')
+            else:
+                inInput.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'vector3'))
+
+        # Set matrix value
+        matInput = matrixNode.addInput('mat', 'matrix33')
+        matrixValue = transform.getMatrix()
+        # Extract 3x3 matrix from 4x4 matrix
+        matrixValue = matrixValue[0:3] + matrixValue[4:7] + matrixValue[8:11]
+        matrixValue = ', '.join([str(x) for x in matrixValue])
+        #print('  - Matrix:', matrixValue)
+        matInput.setAttribute('value', matrixValue)        
+
+        # Add offset value
+        offsetValue = transform.getOffset()
+        offsetValue = ', '.join([str(x) for x in offsetValue])
+        #print('  - Offset:', offsetValue)
+        # Add a add vector3 to graph
+
+        previousNode = matrixNode.getName()
+    #elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG:
+    #    print('  - Base:', transform.getBase())
+
+# Create an output for the last node if any
+convertNode2 = ng.addNode('convert', 'asColor', 'color3')
+converInput2 = convertNode2.addInput('in', 'vector3')
+converInput2.setAttribute('nodename', previousNode)
+if previousNode:
+    out = ng.addOutput(ng.createValidChildName('out'), 'color3')
+    out.setAttribute('nodename', 'asColor')
+
+# Write the graph document
+print('---------------------------')
+print('Write OCIO transform graph file:', xformName + '.' + 'mtlx')
+filename = mx.FilePath('./data') / mx.FilePath(xformName + '.' + 'mtlx')
+mx.writeToXmlFile(graphDoc, filename)
+
+result = mx.writeToXmlString(graphDoc)
+display_markdown('#### Generated Transform Graph\n' + '```xml\n' + result + '```\n', raw=True)
 
