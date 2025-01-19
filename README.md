@@ -25,7 +25,7 @@ The utilities require the following dependencies:
 - OpenColorIO 2.2 and above
 - MaterialX 1.38.9 and above
 
-The latest version tested with is MaterialX 1.39.1 and OpenColorIO 2.3.2
+The latest version tested with is MaterialX 1.39.2 and OpenColorIO 2.4.1
 
 ### Command Line Utilities
 
