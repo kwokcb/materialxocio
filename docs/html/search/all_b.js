@@ -1,5 +1,6 @@
 var searchData=
 [
   ['ocio_20utilities_20for_20materialx_0',['OCIO Utilities for MaterialX',['../index.html',1,'']]],
-  ['ociomaterialaxgenerator_1',['OCIOMaterialaxGenerator',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html',1,'materialxocio::core']]]
+  ['ociomaterialaxgenerator_1',['OCIOMaterialaxGenerator',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html',1,'materialxocio::core']]],
+  ['osl_2',['OSL',['../classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab42e34cd263a421e1cde70b4112de5cc',1,'materialxocio::core::OCIOMaterialaxGenerator']]]
 ];

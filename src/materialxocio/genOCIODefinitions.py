@@ -27,6 +27,9 @@ import PyOpenColorIO as OCIO
 import core as mxocio
 
 def main():
+    """
+    Main entry point for generating MaterialX definitions using OCIO.
+    """
     parser = argparse.ArgumentParser(description="Create Materialx definitions using OCIO.")
     parser.add_argument('--graph', dest='graph', help='Generate a node graph implementations instead of source code.', action='store_true')
     parser.add_argument('--outputPath', dest='outputPath', help='File path to output material files to.')

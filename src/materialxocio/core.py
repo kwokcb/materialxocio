@@ -3,7 +3,7 @@
 Utilities to generate MaterialX color transform definitions using OCIO.
 
 The minimum requirement is OCIO version 2.2 which is packaged with
-ACES Cg Config` and `ACES Studio Config` configurations.
+"ACES Cg Config" and "ACES Studio Config" configurations.
 '''
 
 import PyOpenColorIO as OCIO
@@ -18,13 +18,8 @@ class OCIOMaterialaxGenerator():
     def getBuiltinConfigs(self):
         '''
         Get the OCIO built in configurations.
-        Returnes a dictionary of color spaces and the default `ACES Cg Config`.
+        Returnes a dictionary of color spaces and the default "ACES Cg Config".
         '''
-
-        # As of version 2.2, `ACES Cg Config` and `ACES Studio Config` are packaged with `OCIO`, meaning that 
-        # they are available to use without having to download them separately. The `getBuiltinConfigs()` 
-        # API is explained [here](https://opencolorio.readthedocs.io/en/latest/releases/ocio_2_2.html)
-
         # Get the OCIO built in configs
         registry = OCIO.BuiltinConfigRegistry().getBuiltinConfigs()
 
@@ -55,6 +50,11 @@ class OCIOMaterialaxGenerator():
         return configs, builtinCfgC
 
     def printConfigs(self, configs):
+        '''
+        Print the OCIO built in configurations as a markdown table.
+        @param configs: The OCIO configurations.
+        @return: A markdown string.
+        '''
         title = '| Configuration | Color Space | Aliases |\n'
         title = title + '| --- | --- | --- |\n'
 
@@ -81,6 +81,11 @@ class OCIOMaterialaxGenerator():
 
     def setShaderDescriptionParameters(self, shaderDesc, sourceSpace, targetSpace, typeName):
         '''
+        Set parameters on a shader description for a given source and target color space and type name.
+        @param shaderDesc: The shader description.
+        @param sourceSpace: The source color space.
+        @param targetSpace: The target color space.
+        @param typeName: The type name.        
         '''
         transformFunctionName = self.createTransformName(sourceSpace, targetSpace, typeName)
         shaderDesc.setFunctionName(transformFunctionName)
@@ -90,6 +95,12 @@ class OCIOMaterialaxGenerator():
         '''
         Generate shader for a transform from a source color space to a destination color space
         for a given config and shader language.
+
+        @param config: The OCIO configuration.
+        @param sourceColorSpace: The source color space.
+        @param destColorSpace: The destination color space.
+        @param language: The OCIO GPU language.
+        @return: A tuple containing the shader code and the number of texture resources required.
 
         Returns the shader code and the number of texture resources required.
         '''
@@ -162,6 +173,11 @@ class OCIOMaterialaxGenerator():
         '''
         Scan through all the color spaces on the configs to check for texture resource usage.
         Returns a set of color spaces that require texture resources.
+
+        @param configs: The OCIO configurations.
+        @param targetColorSpace: The target color space.
+        @param language: The OCIO GPU language.
+        @return: A set of color spaces that require texture resources.
         '''
         testedSources = set()
         textureSources = set()
@@ -184,6 +200,14 @@ class OCIOMaterialaxGenerator():
         return textureSources
 
     def MSL(self, config, sourceColorSpace, targetColorSpace):
+        '''
+        Generate MSL shader code for a transform from a source color space to a destination color space
+        for a given config.
+        @param config: The OCIO configuration.
+        @param sourceColorSpace: The source color space.
+        @param targetColorSpace: The destination color space.
+        @return: The shader code.
+        '''
         language = OCIO.GpuLanguage.GPU_LANGUAGE_MSL_2_0
         code, textureCount = self.generateShaderCode(config, sourceColorSpace, targetColorSpace, language)
         if code:
@@ -191,6 +215,14 @@ class OCIOMaterialaxGenerator():
             code = '```c++\n' + code + '\n```\n'
 
     def OSL(self, config, sourceColorSpace, targetColorSpace):
+        '''
+        Generate OSL shader code for a transform from a source color space to a destination color space
+        for a given config.
+        @param config: The OCIO configuration.
+        @param sourceColorSpace: The source color space.
+        @param targetColorSpace: The destination color space.
+        @return: The shader code.
+        '''
         if OCIO.GpuLanguage.LANGUAGE_OSL_1:
             language = OCIO.GpuLanguage.LANGUAGE_OSL_1
             code, textureCount = self.generateShaderCode(config, sourceColorSpace, targetColorSpace, language)
@@ -235,6 +267,11 @@ class OCIOMaterialaxGenerator():
     def writeShaderCode(self, outputPath, code, transformName, extension, target):
         '''
         Write the shader code to a file.
+        @param outputPath: The output file path.
+        @param code: The shader code.
+        @param transformName: The transform name.
+        @param extension: The file extension.
+        @param target: The target language.
         '''   
         # Write source code file
         filename = outputPath / mx.FilePath(transformName + '.' + extension)
@@ -246,6 +283,13 @@ class OCIOMaterialaxGenerator():
     def createMaterialXImplementation(self, sourceColorSpace, targetColorSpace, doc, definition, transformName, extension, target):
         '''
         Create a new implementation in a document for a given definition.
+        @param sourceColorSpace: The source color space.
+        @param targetColorSpace: The target color space.
+        @param doc: The MaterialX document.
+        @param definition: The MaterialX definition.
+        @param transformName: The transform name.
+        @param extension: The file extension.
+        @param target: The target language.
         '''
         implName = transformName + '_' + target
         filename = transformName + '.' + extension
@@ -273,6 +317,14 @@ class OCIOMaterialaxGenerator():
         '''
         Generate a MaterialX definition and implementation for a given color space transform.    
         Returns the definition, implementation, source code, extension and target.
+        @param config: The OCIO configuration.
+        @param definitionDoc: The MaterialX document to add the definition to.
+        @param implDoc: The MaterialX document to add the implementation to.
+        @param sourceColorSpace: The source color space.
+        @param targetColorSpace: The destination color space.
+        @param type: The type of the transform.
+        @param IN_PIXEL_STRING: The input pixel string.
+        @return: A tuple containing the definition, transform name, source code, extension        
         '''
 
         # List of MaterialX target language, source code extensions, and OCIO GPU languages
@@ -462,6 +514,9 @@ class OCIOMaterialaxGenerator():
     def createColor3Variant(self, definition, definitionDoc, IN_PIXEL_STRING = 'in'):
         '''
         Create a color3 variant of a color4 definition.
+        @param definition: The color4 definition.
+        @param definitionDoc: The MaterialX document.
+        @param IN_PIXEL_STRING: The input pixel string.        
         '''
         color4Name = definition.getName()
         color3Name = color4Name.replace('color4', 'color3')

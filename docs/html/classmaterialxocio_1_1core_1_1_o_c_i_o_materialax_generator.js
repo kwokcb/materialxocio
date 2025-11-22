@@ -10,5 +10,9 @@ var classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator =
     [ "generateTransformGraph", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#aab7c4f077197ff1c745bd9451eb41327", null ],
     [ "getBuiltinConfigs", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab6f46f9b94b62f83cbcfca751b0143ba", null ],
     [ "hasTextureResources", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ae40df93ea8fc00fb1ddf7fe992376f06", null ],
+    [ "MSL", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab841b39e2c4484c23a74a644310b6a0f", null ],
+    [ "OSL", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab42e34cd263a421e1cde70b4112de5cc", null ],
+    [ "printConfigs", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a7e2f1100ac5cc78556c900bc308bce5b", null ],
+    [ "setShaderDescriptionParameters", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab782e1bfee192d98c8f451db0da45f68", null ],
     [ "writeShaderCode", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ae3f166535074ec39fb37a352aef5a4f8", null ]
 ];
