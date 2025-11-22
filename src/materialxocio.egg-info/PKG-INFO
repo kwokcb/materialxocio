@@ -1,6 +1,6 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: materialxocio
-Version: 0.1.39.2
+Version: 0.1.39.5
 Summary: Utilities for MaterialX 1.38.9 and OCIO 2.2 and above
 Author-email: Bernard Kwok <kwokcb@gmail.com>
 License: MIT License
@@ -37,8 +37,9 @@ Classifier: Topic :: Software Development :: Libraries :: Python Modules
 Requires-Python: >=3.8
 Description-Content-Type: text/markdown
 License-File: LICENSE
-Requires-Dist: materialx>=1.39.2
+Requires-Dist: materialx>=1.39.4
 Requires-Dist: opencolorio>=2.2.0
+Dynamic: license-file
 
 ## OCIO Utilities for MaterialX
 
@@ -67,7 +68,7 @@ The utilities require the following dependencies:
 - OpenColorIO 2.2 and above
 - MaterialX 1.38.9 and above
 
-The latest version tested with is MaterialX 1.39.1 and OpenColorIO 2.3.2
+The latest version tested with is MaterialX 1.39.5 (development) and OpenColorIO 2.5.0 (release)
 
 ### Command Line Utilities
 

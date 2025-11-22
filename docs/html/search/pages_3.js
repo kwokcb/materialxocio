@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['utilities_20for_20materialx_0',['OCIO Utilities for MaterialX',['../index.html',1,'']]]
+  ['dependencies_0',['Dependencies',['..//Users/bernardkwok/work/materialxocio/README.md#autotoc_md3',1,'']]],
+  ['documentation_1',['Documentation',['..//Users/bernardkwok/work/materialxocio/README.md#autotoc_md6',1,'']]]
 ];

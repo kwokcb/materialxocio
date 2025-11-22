@@ -193,7 +193,7 @@ def generateShaderCode(config, sourceColorSpace, destColorSpace, language):
             shaderDesc.setLanguage(language)
             gpuProcessor.extractGpuShaderInfo(shaderDesc)
             shaderCode = shaderDesc.getShaderText()
-    
+
     return shaderCode
 
 # Use GLSL as the shader language to produce, and linear as the target color space
@@ -289,7 +289,7 @@ def generateShaderCode2(config, sourceColorSpace, destColorSpace, language):
                             textureCount += 1
                 except OCIO.Exception as err:
                     print(err)
-    
+
     return shaderCode, textureCount
 
 
@@ -579,7 +579,7 @@ for gen in generationList:
         if not definition:
             definition = generateMaterialXDefinition(definitionDoc, sourceColorSpace, targetColorSpace, 
                                                     IN_PIXEL_STRING, type)
-        
+
         # Create the implementation
         createMaterialXImplementation(implDoc, definition, transformName, extension, target)
 
@@ -606,7 +606,7 @@ color3Def.copyContentFrom(definition)
 c3input = color3Def.getInput(IN_PIXEL_STRING)
 c3input.setType('color3')
 c3input.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
-    
+
 ngName = color3Def.getName().replace('ND_', 'NG_')
 ng = definitionDoc.addNodeGraph(ngName)
 c4instance = ng.addNodeInstance(definition)
@@ -704,7 +704,7 @@ def generateTransformGraph(config, sourceColorSpace, destColorSpace):
     if processor:
         processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
         groupTransform = processor.createGroupTransform()
-    
+
     return groupTransform
 
 

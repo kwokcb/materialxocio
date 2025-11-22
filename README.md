@@ -20,12 +20,12 @@ The distribution will be available on PyPi in the near future as `materialxocio`
 
 ### Dependencies
 
-The utilities require the following dependencies:
+The utilities have the following minimal dependencies:
 
 - OpenColorIO 2.2 and above
 - MaterialX 1.38.9 and above
 
-The latest version tested with is MaterialX 1.39.2 and OpenColorIO 2.4.1
+The latest version tested with is MaterialX 1.39.5 (development) and OpenColorIO 2.5.0 (release)
 
 ### Command Line Utilities
 

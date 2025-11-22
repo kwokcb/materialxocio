@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['api_0',['API',['../index.html#autotoc_md7',1,'']]]
+  ['api_0',['API',['..//Users/bernardkwok/work/materialxocio/README.md#autotoc_md7',1,'']]]
 ];

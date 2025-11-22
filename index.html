@@ -376,22 +376,22 @@ code {
 </div></code></pre>
 <p>The distribution will be available on PyPi in the near future as <code>materialxocio</code>.</p>
 <h3 id="dependencies">Dependencies</h3>
-<p>The utilities require the following dependencies:</p>
+<p>The utilities have the following minimal dependencies:</p>
 <ul>
 <li>OpenColorIO 2.2 and above</li>
 <li>MaterialX 1.38.9 and above</li>
 </ul>
-<p>The latest version tested with is MaterialX 1.39.2 and OpenColorIO 2.4.1</p>
+<p>The latest version tested with is MaterialX 1.39.5 (development) and OpenColorIO 2.5.0 (release)</p>
 <h3 id="command-line-utilities">Command Line Utilities</h3>
 <p>The repository contains the following command line utilities:</p>
 <ul>
-<li>generateOCIODefinitions: Generates MaterialX node definitions from the default ACES Cg config for<br>
+<li>generateOCIODefinitions: Generates MaterialX node definitions from the default ACES Cg config for
 color transforms without LUTs. Each transform is from the source colorspace to lin_rec709.</li>
 <li>If source code implementations are generated, each definition consists of:
 <ul>
 <li>A node definition MaterialX file</li>
 <li>A node implementation MaterialX file</li>
-<li>Source code in the GLSL shading language. Note that options to use other OCIO<br>
+<li>Source code in the GLSL shading language. Note that options to use other OCIO
 provided languages can be added.</li>
 </ul>
 </li>

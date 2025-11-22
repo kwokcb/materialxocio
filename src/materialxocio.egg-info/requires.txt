@@ -1,2 +1,2 @@
-materialx>=1.39.2
+materialx>=1.39.4
 opencolorio>=2.2.0
