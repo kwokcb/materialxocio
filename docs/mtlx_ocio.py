@@ -140,7 +140,7 @@ for c in configs:
         aliases = colorSpace.getAliases()
         rows = rows + '| ' + c + ' | ' + colorSpace.getName() + ' | ' + ', '.join(aliases) + ' |\n'
 
-md = '<details><summary>Color Spaces</summary>\n\n' + title + rows + '</details>'
+md = '<details open><summary>Color Spaces</summary>\n\n' + title + rows + '</details>'
 display_markdown(md, raw=True)
 
 
@@ -172,7 +172,7 @@ display_markdown(md, raw=True)
 
 
 def generateShaderCode(config, sourceColorSpace, destColorSpace, language):
-    cshaderCodee = ''
+    shaderCode = ''
     if not config:
         return shaderCode
 
@@ -193,7 +193,7 @@ def generateShaderCode(config, sourceColorSpace, destColorSpace, language):
             shaderDesc.setLanguage(language)
             gpuProcessor.extractGpuShaderInfo(shaderDesc)
             shaderCode = shaderDesc.getShaderText()
-
+    
     return shaderCode
 
 # Use GLSL as the shader language to produce, and linear as the target color space
@@ -222,7 +222,7 @@ for c in configs:
         code = '<code>' + code + '</code>'
         rows = rows + '| ' + colorSpace.getName() + ' | ' + targetColorSpace + ' | ' + code + '|\n'
 
-md = '<details><summary>Transform Code for GLSL</summary>\n\n' + title + rows + '</details>'
+md = '<details open><summary>Transform Code for GLSL</summary>\n\n' + title + rows + '</details>'
 display_markdown(md, raw=True)
 
 
@@ -289,7 +289,7 @@ def generateShaderCode2(config, sourceColorSpace, destColorSpace, language):
                             textureCount += 1
                 except OCIO.Exception as err:
                     print(err)
-
+    
     return shaderCode, textureCount
 
 
@@ -330,7 +330,7 @@ if code:
                         "// " + sourceColorSpace + " to " + targetColorSpace + " function. Texture count: %d\n" % textureCount)
     code = '```c++\n' + code + '\n```\n'
 
-    md = '<details><summary>Secondary Dependency Sample Code</summary>\n\n' + code + '</details>'
+    md = '<details open><summary>Secondary Dependency Sample Code</summary>\n\n' + code + '</details>'
     display_markdown(md, raw=True)
 
 
@@ -390,7 +390,7 @@ code, textureCount = generateShaderCode2(builtinCfgC, sourceColorSpace, targetCo
 if code:
     code = code.replace("// Declaration of the OCIO shader function\n", "// " + sourceColorSpace + " to " + targetColorSpace + " function\n")
     code = '```c++\n' + code + '\n```\n'
-    md = '<details><summary>MSL struct usage</summary>\n\n' + code + '</details>'
+    md = '<details open><summary>MSL struct usage</summary>\n\n' + code + '</details>'
     display_markdown(md, raw=True)
 
 
@@ -417,7 +417,7 @@ if OCIO.GpuLanguage.LANGUAGE_OSL_1:
         code = code.replace('__temp_name__', transformName)
         code = code.replace("// Declaration of the OCIO shader function\n", "// " + sourceColorSpace + " to " + targetColorSpace + " function\n")
         code = '```c++\n' + code + '\n```\n'
-        md = '<details><summary>OSL dependent function / includes code</summary>\n\n' + code + '</details>'
+        md = '<details open><summary>OSL dependent function / includes code</summary>\n\n' + code + '</details>'
         display_markdown(md, raw=True)
 
 
@@ -579,7 +579,7 @@ for gen in generationList:
         if not definition:
             definition = generateMaterialXDefinition(definitionDoc, sourceColorSpace, targetColorSpace, 
                                                     IN_PIXEL_STRING, type)
-
+        
         # Create the implementation
         createMaterialXImplementation(implDoc, definition, transformName, extension, target)
 
@@ -606,7 +606,7 @@ color3Def.copyContentFrom(definition)
 c3input = color3Def.getInput(IN_PIXEL_STRING)
 c3input.setType('color3')
 c3input.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
-
+    
 ngName = color3Def.getName().replace('ND_', 'NG_')
 ng = definitionDoc.addNodeGraph(ngName)
 c4instance = ng.addNodeInstance(definition)
@@ -621,8 +621,11 @@ ngout = ng.addOutput('out', 'color3')
 ng.setNodeDef(color3Def)
 
 c4instanceIn.setNodeName(c3to4.getName())
+c4instanceIn.removeAttribute('value')
 c4to3Input.setNodeName(c4instance.getName())
+c4to3Input.removeAttribute('value')
 ngout.setNodeName(c4to3.getName())
+ngout.removeAttribute('value')
 c3to4Input.setInterfaceName(IN_PIXEL_STRING)
 
 result = mx.writeToXmlString(definitionDoc)
@@ -673,7 +676,7 @@ mx.writeToXmlFile(definitionDoc, filename)
 
 # ### Future Exploration
 # 
-# At time of writing (September 2024), the NanoColor initiative is underway. The current plan is to allow pre-processing of transforms to create MaterialX definitions with graph implementation. See the next section for some unofficial prototyping.
+# At time of writing (Dec, 2025), the NanoColor initiative is underway. The current plan is to allow pre-processing of transforms to create MaterialX definitions with graph implementation. See the next section for some unofficial prototyping.
 # 
 # As there is the intent to provide Javascript bindings it will be interesting to see how this will interact with Web libraries and how it can work with the glTF Texture Procedurals extension.
 
@@ -704,7 +707,7 @@ def generateTransformGraph(config, sourceColorSpace, destColorSpace):
     if processor:
         processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
         groupTransform = processor.createGroupTransform()
-
+    
     return groupTransform
 
 

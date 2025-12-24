@@ -1,7 +1,7 @@
 Metadata-Version: 2.4
 Name: materialxocio
 Version: 0.1.39.5
-Summary: Utilities for MaterialX 1.38.9 and OCIO 2.2 and above
+Summary: Utilities for MaterialX 1.38.9 and OCIO 2.2 and newer.
 Author-email: Bernard Kwok <kwokcb@gmail.com>
 License: MIT License
         
