@@ -416,7 +416,7 @@ class OCIOMaterialaxGenerator():
             # Get type of transform
             transformType = transform.getTransformType()
             if transformType in invalidTransforms:
-                print(f'- Transform[{i}]: {transformType} contains an unsupported transform type')
+                print(f'- WARNING: Transform[{i}]: {transformType} contains an unsupported transform type')
                 continue
 
             #print(f'- Transform[{i}]: {transformType}')   
@@ -491,8 +491,92 @@ class OCIOMaterialaxGenerator():
 
                     previousNode = offsetNode.getName()
 
+            # Remap range
+            elif transformType == OCIO.TransformType.TRANSFORM_TYPE_RANGE:
+                # Set old min/max and new min/max
+                inMin = transform.getMinInValue()
+                inMax = transform.getMaxInValue()
+                outMin = transform.getMinOutValue()
+                if not outMin:
+                    outMin = inMin
+                outMax = transform.getMaxOutValue()
+                if not outMax:
+                    outMax = inMax
+                #print(f'  - Range: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}',
+                #      transform)
+
+                clamp_min = False
+                clamp_max = False
+                if inMin and not inMax and not outMax:
+                    #print(f'  ->>>>>>>> Clamp max: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}')
+                    clamp_max = True
+                elif inMax and not inMin and not outMin:
+                    #print(f'  ->>>>>>>>> Clamp min: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}')
+                    clamp_min = True
+
+                # If not clamp then it's a range remap
+                if not clamp_min and not clamp_max:
+                    rangeNode = ng.addNode('range', ng.createValidChildName(f'range'), 'vector3')
+                    rangeInput = rangeNode.addInput('in', 'vector3')
+                    if previousNode:
+                        rangeInput.setAttribute('nodename', previousNode)
+                    else:
+                        if i==0:
+                            rangeInput.setAttribute('nodename', 'asVec')
+                        else:
+                            rangeInput.setValue([0.0, 0.0, 0.0], 'vector3')
+
+                    inMinInput = rangeNode.addInput('inlow', 'vector3')
+                    inMinInput.setValue([inMin, inMin, inMin], 'vector3')
+                    inMaxInput = rangeNode.addInput('inhigh', 'vector3')
+                    inMaxInput.setValue([inMax, inMax, inMax], 'vector3')
+                    outMinInput = rangeNode.addInput('outlow', 'vector3')
+                    outMinInput.setValue([outMin, outMin, outMin], 'vector3')
+                    outMaxInput = rangeNode.addInput('outhigh', 'vector3')
+                    outMaxInput.setValue([outMax, outMax, outMax], 'vector3')
+
+                    #print("add range node:", mx.prettyPrint(rangeNode))
+
+                    previousNode = rangeNode.getName()
+
+                elif clamp_max:
+                    clampNode = ng.addNode('min', ng.createValidChildName(f'clamp_max'), 'vector3')
+                    clampInput = clampNode.addInput('in1', 'vector3')
+                    if previousNode:
+                        clampInput.setAttribute('nodename', previousNode)
+                    else:   
+                        if i==0:
+                            clampInput.setAttribute('nodename', 'asVec')
+                        else:
+                            clampInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                    minInput = clampNode.addInput('in2', 'vector3')
+                    minInput.setValue([inMax, inMax, inMax], 'vector3')
+
+                    #print('add clamp max node:', mx.prettyPrint(clampNode))
+                    previousNode = clampNode.getName()
+
+                elif clamp_min:
+                    clampNode = ng.addNode('max', ng.createValidChildName(f'clamp_min'), 'vector3')
+                    clampInput = clampNode.addInput('in1', 'vector3')
+                    if previousNode:
+                        clampInput.setAttribute('nodename', previousNode)
+                    else:   
+                        if i==0:
+                            clampInput.setAttribute('nodename', 'asVec')
+                        else:
+                            clampInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                    maxInput = clampNode.addInput('in2', 'vector3')
+                    maxInput.setValue([inMin, inMin, inMin], 'vector3')
+
+                    #print('add clamp min node:', mx.prettyPrint(clampNode))
+                    previousNode = clampNode.getName()
+
+
+            elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG_CAMERA:
+                print(f'- WARNING. Transform[{i}]: {transformType} support has not been implemented yet')
+
             else:
-                print(f'- Transform[{i}]: {transformType} support has not been implemented yet')
+                print(f'- WARNING. Transform[{i}]: {transformType} support has not been implemented yet')
                 continue
 
 

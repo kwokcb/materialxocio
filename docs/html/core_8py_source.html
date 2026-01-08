@@ -547,7 +547,7 @@ $(function(){initNavTree('core_8py_source.html',''); initResizable(true); });
 <div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>            <span class="comment"># Get type of transform</span></div>
 <div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>            transformType = transform.getTransformType()</div>
 <div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>            <span class="keywordflow">if</span> transformType <span class="keywordflow">in</span> invalidTransforms:</div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>                print(f<span class="stringliteral">&#39;- Transform[{i}]: {transformType} contains an unsupported transform type&#39;</span>)</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>                print(f<span class="stringliteral">&#39;- WARNING: Transform[{i}]: {transformType} contains an unsupported transform type&#39;</span>)</div>
 <div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>                <span class="keywordflow">continue</span></div>
 <div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span> </div>
 <div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>            <span class="comment">#print(f&#39;- Transform[{i}]: {transformType}&#39;)   </span></div>
@@ -622,60 +622,144 @@ $(function(){initNavTree('core_8py_source.html',''); initResizable(true); });
 <div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span> </div>
 <div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>                    previousNode = offsetNode.getName()</div>
 <div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span> </div>
-<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>                print(f<span class="stringliteral">&#39;- Transform[{i}]: {transformType} support has not been implemented yet&#39;</span>)</div>
-<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>                <span class="keywordflow">continue</span></div>
-<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span> </div>
-<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span> </div>
-<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>        <span class="comment"># Create an output for the last node if any</span></div>
-<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>        convertNode2 = ng.addNode(<span class="stringliteral">&#39;convert&#39;</span>, <span class="stringliteral">&#39;asColor&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>        converInput2 = convertNode2.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
-<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>        <span class="keywordflow">if</span> previousNode:</div>
-<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>            converInput2.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, previousNode)</div>
-<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>        <span class="keywordflow">else</span>:</div>
-<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>            <span class="comment"># Pass-through</span></div>
-<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>            <span class="comment">#print(&#39;No transforms applied. Transform is a pass-through.&#39;)</span></div>
-<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span>            converInput2.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asVec&#39;</span>)</div>
-<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span> </div>
-<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>        out = ng.addOutput(ng.createValidChildName(<span class="stringliteral">&#39;out&#39;</span>), <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>        out.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asColor&#39;</span>)</div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span> </div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>        <span class="keywordflow">return</span> graphDoc</div>
-<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span> </div>
-</div>
-<div class="foldopen" id="foldopen00514" data-start="" data-end="">
-<div class="line"><a id="l00514" name="l00514"></a><span class="lineno"><a class="line" href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1">  514</a></span>    <span class="keyword">def </span><a class="code hl_function" href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1">createColor3Variant</a>(self, definition, definitionDoc, IN_PIXEL_STRING = &#39;in&#39;):</div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>        <span class="stringliteral">&#39;&#39;&#39;</span></div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span><span class="stringliteral">        Create a color3 variant of a color4 definition.</span></div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span><span class="stringliteral">        @param definition: The color4 definition.</span></div>
-<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span><span class="stringliteral">        @param definitionDoc: The MaterialX document.</span></div>
-<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span><span class="stringliteral">        @param IN_PIXEL_STRING: The input pixel string.        </span></div>
-<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span><span class="stringliteral">        &#39;&#39;&#39;</span></div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>        color4Name = definition.getName()</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>        color3Name = color4Name.replace(<span class="stringliteral">&#39;color4&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>        color3Def = definitionDoc.addNodeDef(color3Name)</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        color3Def.copyContentFrom(definition)</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>        c3input = color3Def.getInput(IN_PIXEL_STRING)</div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>        c3input.setType(<span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>        c3input.setValue([0.0, 0.0, 0.0], <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>            </div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>        ngName = color3Def.getName().replace(<span class="stringliteral">&#39;ND_&#39;</span>, <span class="stringliteral">&#39;NG_&#39;</span>)</div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>        ng = definitionDoc.addNodeGraph(ngName)</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>        c4instance = ng.addNodeInstance(definition)</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>        c4instance.addInputsFromNodeDef()</div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>        c4instanceIn = c4instance.getInput(IN_PIXEL_STRING)</div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>        c3to4 = ng.addNode(<span class="stringliteral">&#39;convert&#39;</span>, <span class="stringliteral">&#39;c3to4&#39;</span>, <span class="stringliteral">&#39;color4&#39;</span>)</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>        c3to4Input = c3to4.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>        c4to3 = ng.addNode(<span class="stringliteral">&#39;convert&#39;</span>, <span class="stringliteral">&#39;c4to3&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>        c4to3Input = c4to3.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;color4&#39;</span>)</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>        ngout = ng.addOutput(<span class="stringliteral">&#39;out&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>        <span class="comment">#ngin = ng.addInput(&#39;in&#39;, &#39;color3&#39;)</span></div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>        ng.setNodeDef(color3Def)</div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>            <span class="comment"># Remap range</span></div>
+<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>            <span class="keywordflow">elif</span> transformType == OCIO.TransformType.TRANSFORM_TYPE_RANGE:</div>
+<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>                <span class="comment"># Set old min/max and new min/max</span></div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>                inMin = transform.getMinInValue()</div>
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>                inMax = transform.getMaxInValue()</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>                outMin = transform.getMinOutValue()</div>
+<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> outMin:</div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>                    outMin = inMin</div>
+<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>                outMax = transform.getMaxOutValue()</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> outMax:</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>                    outMax = inMax</div>
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>                <span class="comment">#print(f&#39;  - Range: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}&#39;,</span></div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>                <span class="comment">#      transform)</span></div>
+<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span> </div>
+<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>                clamp_min = <span class="keyword">False</span></div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>                clamp_max = <span class="keyword">False</span></div>
+<div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span>                <span class="keywordflow">if</span> inMin <span class="keywordflow">and</span> <span class="keywordflow">not</span> inMax <span class="keywordflow">and</span> <span class="keywordflow">not</span> outMax:</div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>                    <span class="comment">#print(f&#39;  -&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Clamp max: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}&#39;)</span></div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>                    clamp_max = <span class="keyword">True</span></div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>                <span class="keywordflow">elif</span> inMax <span class="keywordflow">and</span> <span class="keywordflow">not</span> inMin <span class="keywordflow">and</span> <span class="keywordflow">not</span> outMin:</div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>                    <span class="comment">#print(f&#39;  -&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; Clamp min: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}&#39;)</span></div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>                    clamp_min = <span class="keyword">True</span></div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span> </div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>                <span class="comment"># If not clamp then it&#39;s a range remap</span></div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>                <span class="keywordflow">if</span> <span class="keywordflow">not</span> clamp_min <span class="keywordflow">and</span> <span class="keywordflow">not</span> clamp_max:</div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>                    rangeNode = ng.addNode(<span class="stringliteral">&#39;range&#39;</span>, ng.createValidChildName(f<span class="stringliteral">&#39;range&#39;</span>), <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>                    rangeInput = rangeNode.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>                    <span class="keywordflow">if</span> previousNode:</div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>                        rangeInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, previousNode)</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>                    <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>                        <span class="keywordflow">if</span> i==0:</div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>                            rangeInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asVec&#39;</span>)</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>                        <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>                            rangeInput.setValue([0.0, 0.0, 0.0], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span> </div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>                    inMinInput = rangeNode.addInput(<span class="stringliteral">&#39;inlow&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>                    inMinInput.setValue([inMin, inMin, inMin], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>                    inMaxInput = rangeNode.addInput(<span class="stringliteral">&#39;inhigh&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>                    inMaxInput.setValue([inMax, inMax, inMax], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>                    outMinInput = rangeNode.addInput(<span class="stringliteral">&#39;outlow&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>                    outMinInput.setValue([outMin, outMin, outMin], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>                    outMaxInput = rangeNode.addInput(<span class="stringliteral">&#39;outhigh&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>                    outMaxInput.setValue([outMax, outMax, outMax], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span> </div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                    <span class="comment">#print(&quot;add range node:&quot;, mx.prettyPrint(rangeNode))</span></div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span> </div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                    previousNode = rangeNode.getName()</div>
 <div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>        c4instanceIn.setNodeName(c3to4.getName())</div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>        c4to3Input.setNodeName(c4instance.getName())</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>        ngout.setNodeName(c4to3.getName())</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>        c3to4Input.setInterfaceName(IN_PIXEL_STRING)</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>                <span class="keywordflow">elif</span> clamp_max:</div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                    clampNode = ng.addNode(<span class="stringliteral">&#39;min&#39;</span>, ng.createValidChildName(f<span class="stringliteral">&#39;clamp_max&#39;</span>), <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                    clampInput = clampNode.addInput(<span class="stringliteral">&#39;in1&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                    <span class="keywordflow">if</span> previousNode:</div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>                        clampInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, previousNode)</div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>                    <span class="keywordflow">else</span>:   </div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>                        <span class="keywordflow">if</span> i==0:</div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                            clampInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asVec&#39;</span>)</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                        <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>                            clampInput.setValue([0.0, 0.0, 0.0], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>                    minInput = clampNode.addInput(<span class="stringliteral">&#39;in2&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>                    minInput.setValue([inMax, inMax, inMax], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span> </div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>                    <span class="comment">#print(&#39;add clamp max node:&#39;, mx.prettyPrint(clampNode))</span></div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>                    previousNode = clampNode.getName()</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span> </div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>                <span class="keywordflow">elif</span> clamp_min:</div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>                    clampNode = ng.addNode(<span class="stringliteral">&#39;max&#39;</span>, ng.createValidChildName(f<span class="stringliteral">&#39;clamp_min&#39;</span>), <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>                    clampInput = clampNode.addInput(<span class="stringliteral">&#39;in1&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>                    <span class="keywordflow">if</span> previousNode:</div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>                        clampInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, previousNode)</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>                    <span class="keywordflow">else</span>:   </div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>                        <span class="keywordflow">if</span> i==0:</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>                            clampInput.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asVec&#39;</span>)</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>                        <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>                            clampInput.setValue([0.0, 0.0, 0.0], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>                    maxInput = clampNode.addInput(<span class="stringliteral">&#39;in2&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>                    maxInput.setValue([inMin, inMin, inMin], <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span> </div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>                    <span class="comment">#print(&#39;add clamp min node:&#39;, mx.prettyPrint(clampNode))</span></div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                    previousNode = clampNode.getName()</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span> </div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span> </div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>            <span class="keywordflow">elif</span> transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG_CAMERA:</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                print(f<span class="stringliteral">&#39;- WARNING. Transform[{i}]: {transformType} support has not been implemented yet&#39;</span>)</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span> </div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                print(f<span class="stringliteral">&#39;- WARNING. Transform[{i}]: {transformType} support has not been implemented yet&#39;</span>)</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                <span class="keywordflow">continue</span></div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span> </div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span> </div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>        <span class="comment"># Create an output for the last node if any</span></div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>        convertNode2 = ng.addNode(<span class="stringliteral">&#39;convert&#39;</span>, <span class="stringliteral">&#39;asColor&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>        converInput2 = convertNode2.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;vector3&#39;</span>)</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>        <span class="keywordflow">if</span> previousNode:</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            converInput2.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, previousNode)</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>        <span class="keywordflow">else</span>:</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>            <span class="comment"># Pass-through</span></div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>            <span class="comment">#print(&#39;No transforms applied. Transform is a pass-through.&#39;)</span></div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>            converInput2.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asVec&#39;</span>)</div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span> </div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>        out = ng.addOutput(ng.createValidChildName(<span class="stringliteral">&#39;out&#39;</span>), <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        out.setAttribute(<span class="stringliteral">&#39;nodename&#39;</span>, <span class="stringliteral">&#39;asColor&#39;</span>)</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span> </div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>        <span class="keywordflow">return</span> graphDoc</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span> </div>
+</div>
+<div class="foldopen" id="foldopen00598" data-start="" data-end="">
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno"><a class="line" href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1">  598</a></span>    <span class="keyword">def </span><a class="code hl_function" href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1">createColor3Variant</a>(self, definition, definitionDoc, IN_PIXEL_STRING = &#39;in&#39;):</div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>        <span class="stringliteral">&#39;&#39;&#39;</span></div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span><span class="stringliteral">        Create a color3 variant of a color4 definition.</span></div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span><span class="stringliteral">        @param definition: The color4 definition.</span></div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span><span class="stringliteral">        @param definitionDoc: The MaterialX document.</span></div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span><span class="stringliteral">        @param IN_PIXEL_STRING: The input pixel string.        </span></div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span><span class="stringliteral">        &#39;&#39;&#39;</span></div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>        color4Name = definition.getName()</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>        color3Name = color4Name.replace(<span class="stringliteral">&#39;color4&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>        color3Def = definitionDoc.addNodeDef(color3Name)</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        color3Def.copyContentFrom(definition)</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>        c3input = color3Def.getInput(IN_PIXEL_STRING)</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>        c3input.setType(<span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>        c3input.setValue([0.0, 0.0, 0.0], <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>            </div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        ngName = color3Def.getName().replace(<span class="stringliteral">&#39;ND_&#39;</span>, <span class="stringliteral">&#39;NG_&#39;</span>)</div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        ng = definitionDoc.addNodeGraph(ngName)</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>        c4instance = ng.addNodeInstance(definition)</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        c4instance.addInputsFromNodeDef()</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>        c4instanceIn = c4instance.getInput(IN_PIXEL_STRING)</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>        c3to4 = ng.addNode(<span class="stringliteral">&#39;convert&#39;</span>, <span class="stringliteral">&#39;c3to4&#39;</span>, <span class="stringliteral">&#39;color4&#39;</span>)</div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>        c3to4Input = c3to4.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>        c4to3 = ng.addNode(<span class="stringliteral">&#39;convert&#39;</span>, <span class="stringliteral">&#39;c4to3&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>        c4to3Input = c4to3.addInput(<span class="stringliteral">&#39;in&#39;</span>, <span class="stringliteral">&#39;color4&#39;</span>)</div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>        ngout = ng.addOutput(<span class="stringliteral">&#39;out&#39;</span>, <span class="stringliteral">&#39;color3&#39;</span>)</div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>        <span class="comment">#ngin = ng.addInput(&#39;in&#39;, &#39;color3&#39;)</span></div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>        ng.setNodeDef(color3Def)</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span> </div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>        c4instanceIn.setNodeName(c3to4.getName())</div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>        c4to3Input.setNodeName(c4instance.getName())</div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>        ngout.setNodeName(c4to3.getName())</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>        c3to4Input.setInterfaceName(IN_PIXEL_STRING)</div>
 </div>
 </div>
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html">materialxocio.core.OCIOMaterialaxGenerator</a></div><div class="ttdoc">A class to generate MaterialX color transform definitions using OCIO.</div><div class="ttdef"><b>Definition</b> <a href="#l00013">core.py:13</a></div></div>
@@ -689,7 +773,7 @@ $(function(){initNavTree('core_8py_source.html',''); initResizable(true); });
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ab6f46f9b94b62f83cbcfca751b0143ba"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab6f46f9b94b62f83cbcfca751b0143ba">materialxocio.core.OCIOMaterialaxGenerator.getBuiltinConfigs</a></div><div class="ttdeci">getBuiltinConfigs(self)</div><div class="ttdoc">Get the OCIO built in configurations.</div><div class="ttdef"><b>Definition</b> <a href="#l00018">core.py:18</a></div></div>
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ab782e1bfee192d98c8f451db0da45f68"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab782e1bfee192d98c8f451db0da45f68">materialxocio.core.OCIOMaterialaxGenerator.setShaderDescriptionParameters</a></div><div class="ttdeci">setShaderDescriptionParameters(self, shaderDesc, sourceSpace, targetSpace, typeName)</div><div class="ttdoc">Set parameters on a shader description for a given source and target color space and type name.</div><div class="ttdef"><b>Definition</b> <a href="#l00082">core.py:82</a></div></div>
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ab841b39e2c4484c23a74a644310b6a0f"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ab841b39e2c4484c23a74a644310b6a0f">materialxocio.core.OCIOMaterialaxGenerator.MSL</a></div><div class="ttdeci">MSL(self, config, sourceColorSpace, targetColorSpace)</div><div class="ttdoc">Generate MSL shader code for a transform from a source color space to a destination color space for a...</div><div class="ttdef"><b>Definition</b> <a href="#l00202">core.py:202</a></div></div>
-<div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ac0e90b55df128a89b5cd65c2450158c1"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1">materialxocio.core.OCIOMaterialaxGenerator.createColor3Variant</a></div><div class="ttdeci">createColor3Variant(self, definition, definitionDoc, IN_PIXEL_STRING='in')</div><div class="ttdoc">Create a color3 variant of a color4 definition.</div><div class="ttdef"><b>Definition</b> <a href="#l00514">core.py:514</a></div></div>
+<div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ac0e90b55df128a89b5cd65c2450158c1"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1">materialxocio.core.OCIOMaterialaxGenerator.createColor3Variant</a></div><div class="ttdeci">createColor3Variant(self, definition, definitionDoc, IN_PIXEL_STRING='in')</div><div class="ttdoc">Create a color3 variant of a color4 definition.</div><div class="ttdef"><b>Definition</b> <a href="#l00598">core.py:598</a></div></div>
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ade1fc67e9633c12780a10505cfdd1b89"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ade1fc67e9633c12780a10505cfdd1b89">materialxocio.core.OCIOMaterialaxGenerator.generateMaterialXDefinition</a></div><div class="ttdeci">generateMaterialXDefinition(self, doc, sourceColorSpace, targetColorSpace, inputName, type)</div><div class="ttdoc">Create a new definition in a document for a given color space transform.</div><div class="ttdef"><b>Definition</b> <a href="#l00238">core.py:238</a></div></div>
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ae05e27924d107932d179485a03503dee"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ae05e27924d107932d179485a03503dee">materialxocio.core.OCIOMaterialaxGenerator.createTransformName</a></div><div class="ttdeci">createTransformName(self, sourceSpace, targetSpace, typeName, prefix='mx_')</div><div class="ttdoc">Create a transform name from a source and target color space and a type name.</div><div class="ttdef"><b>Definition</b> <a href="#l00071">core.py:71</a></div></div>
 <div class="ttc" id="aclassmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator_html_ae3f166535074ec39fb37a352aef5a4f8"><div class="ttname"><a href="classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ae3f166535074ec39fb37a352aef5a4f8">materialxocio.core.OCIOMaterialaxGenerator.writeShaderCode</a></div><div class="ttdeci">writeShaderCode(self, outputPath, code, transformName, extension, target)</div><div class="ttdoc">Write the shader code to a file.</div><div class="ttdef"><b>Definition</b> <a href="#l00267">core.py:267</a></div></div>

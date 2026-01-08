@@ -121,9 +121,14 @@ def main():
                 else:
                     # Generate node graph
                     outputType = 'color3'
+                    
                     graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)
                     if graphDoc:
-                        print('Generating <nodegraph> for source color space:', trySource, '---')
+                        print('Generated <nodegraph> for source color space:', trySource, '---')
+                        sourceColorSpace = mx.createValidName(sourceColorSpace)
+                        targetColorSpace = mx.createValidName(targetColorSpace)
+                        sourceColorSpace = sourceColorSpace.replace(':', '_')
+                        targetColorSpace = targetColorSpace.replace(':', '_')
 
                         transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, 'mxgraph_')
                         filename = outputPath / mx.FilePath(transformName + '.' + 'mtlx')

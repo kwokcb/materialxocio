@@ -248,19 +248,24 @@ Functions</h2></td></tr>
 <div class="line"><span class="lineno">  121</span>                <span class="keywordflow">else</span>:</div>
 <div class="line"><span class="lineno">  122</span>                    <span class="comment"># Generate node graph</span></div>
 <div class="line"><span class="lineno">  123</span>                    outputType = <span class="stringliteral">&#39;color3&#39;</span></div>
-<div class="line"><span class="lineno">  124</span>                    graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)</div>
-<div class="line"><span class="lineno">  125</span>                    <span class="keywordflow">if</span> graphDoc:</div>
-<div class="line"><span class="lineno">  126</span>                        print(<span class="stringliteral">&#39;Generating &lt;nodegraph&gt; for source color space:&#39;</span>, trySource, <span class="stringliteral">&#39;---&#39;</span>)</div>
-<div class="line"><span class="lineno">  127</span> </div>
-<div class="line"><span class="lineno">  128</span>                        transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, <span class="stringliteral">&#39;mxgraph_&#39;</span>)</div>
-<div class="line"><span class="lineno">  129</span>                        filename = outputPath / mx.FilePath(transformName + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
-<div class="line"><span class="lineno">  130</span>                        print(<span class="stringliteral">&#39;Write MaterialX node graph definition file:&#39;</span>, filename.asString())</div>
-<div class="line"><span class="lineno">  131</span>                        mx.writeToXmlFile(graphDoc, filename)</div>
+<div class="line"><span class="lineno">  124</span>                    </div>
+<div class="line"><span class="lineno">  125</span>                    graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)</div>
+<div class="line"><span class="lineno">  126</span>                    <span class="keywordflow">if</span> graphDoc:</div>
+<div class="line"><span class="lineno">  127</span>                        print(<span class="stringliteral">&#39;Generated &lt;nodegraph&gt; for source color space:&#39;</span>, trySource, <span class="stringliteral">&#39;---&#39;</span>)</div>
+<div class="line"><span class="lineno">  128</span>                        sourceColorSpace = mx.createValidName(sourceColorSpace)</div>
+<div class="line"><span class="lineno">  129</span>                        targetColorSpace = mx.createValidName(targetColorSpace)</div>
+<div class="line"><span class="lineno">  130</span>                        sourceColorSpace = sourceColorSpace.replace(<span class="stringliteral">&#39;:&#39;</span>, <span class="stringliteral">&#39;_&#39;</span>)</div>
+<div class="line"><span class="lineno">  131</span>                        targetColorSpace = targetColorSpace.replace(<span class="stringliteral">&#39;:&#39;</span>, <span class="stringliteral">&#39;_&#39;</span>)</div>
 <div class="line"><span class="lineno">  132</span> </div>
-<div class="line"><span class="lineno">  133</span>            <span class="keywordflow">else</span>:</div>
-<div class="line"><span class="lineno">  134</span>                print(<span class="stringliteral">&#39;Could not find suitable color space name to use: &#39;</span>, colorSpace.getName())</div>
-<div class="line"><span class="lineno">  135</span> </div>
-<div class="line"><span class="lineno">  136</span> </div>
+<div class="line"><span class="lineno">  133</span>                        transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, <span class="stringliteral">&#39;mxgraph_&#39;</span>)</div>
+<div class="line"><span class="lineno">  134</span>                        filename = outputPath / mx.FilePath(transformName + <span class="stringliteral">&#39;.&#39;</span> + <span class="stringliteral">&#39;mtlx&#39;</span>)</div>
+<div class="line"><span class="lineno">  135</span>                        print(<span class="stringliteral">&#39;Write MaterialX node graph definition file:&#39;</span>, filename.asString())</div>
+<div class="line"><span class="lineno">  136</span>                        mx.writeToXmlFile(graphDoc, filename)</div>
+<div class="line"><span class="lineno">  137</span> </div>
+<div class="line"><span class="lineno">  138</span>            <span class="keywordflow">else</span>:</div>
+<div class="line"><span class="lineno">  139</span>                print(<span class="stringliteral">&#39;Could not find suitable color space name to use: &#39;</span>, colorSpace.getName())</div>
+<div class="line"><span class="lineno">  140</span> </div>
+<div class="line"><span class="lineno">  141</span> </div>
 </div><!-- fragment -->
 </div>
 </div>
