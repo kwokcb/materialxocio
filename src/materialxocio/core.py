@@ -41,7 +41,7 @@ class OCIOMaterialaxGenerator():
                 if colorSpaces:
                     configs[short_name] = [config, colorSpaces]
 
-        acesCgConfigPath = 'ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1'
+        acesCgConfigPath = 'ocio://default'
         builtinCfgC = OCIO.Config.CreateFromFile(acesCgConfigPath)
         print('Built-in config:', builtinCfgC.getName())
         csnames = builtinCfgC.getColorSpaceNames()
@@ -114,7 +114,7 @@ class OCIOMaterialaxGenerator():
         try:
             processor = config.getProcessor(sourceColorSpace, destColorSpace)
         except:
-            print('Failed to generated code for transform: %s -> %s' % (sourceColorSpace, destColorSpace))
+            print('Skipping due to lack of support for transform: %s -> %s' % (sourceColorSpace, destColorSpace))
             return shaderCode, textureCount
 
         if processor:
@@ -393,7 +393,7 @@ class OCIOMaterialaxGenerator():
         result = result.replace('>', ')')
         result = re.sub(r'[\r\n]+', '', result)
 
-        print(result)
+        #print(result)
         docString = docString + '. OCIO Transforms: ' + result 
         nd.setDocString(docString)
 

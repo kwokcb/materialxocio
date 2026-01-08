@@ -7714,7 +7714,7 @@ Built-in config: studio-config-v4.0.0_aces-v2.0_ocio-v2.5
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<p>A more direct way to get the desired config is to call <code>CreateFomFile</code> with the appropriate built in path. In this case we get the <code>ACES Cg Config</code>.`</p>
+<p>A more direct way to get the desired config is to call <code>CreateFomFile</code> with the appropriate built in path. In this case we get the <code>ACES Cg Config</code>.<code> </code>ocio://default<code>is used to get the default built-in config. This can be replaced with a specific build in config such as for 2.5:</code>ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.5`</p>
 </div>
 </div>
 </div>
@@ -7726,7 +7726,7 @@ Built-in config: studio-config-v4.0.0_aces-v2.0_ocio-v2.5
 <div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">acesCgConfigPath</span> <span class="o">=</span> <span class="s1">'ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1'</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">acesCgConfigPath</span> <span class="o">=</span> <span class="s1">'ocio://default'</span>
 <span class="n">builtinCfgC</span> <span class="o">=</span> <span class="n">OCIO</span><span class="o">.</span><span class="n">Config</span><span class="o">.</span><span class="n">CreateFromFile</span><span class="p">(</span><span class="n">acesCgConfigPath</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">'Built-in config:'</span><span class="p">,</span> <span class="n">builtinCfgC</span><span class="o">.</span><span class="n">getName</span><span class="p">())</span>
 <span class="n">csnames</span> <span class="o">=</span> <span class="n">builtinCfgC</span><span class="o">.</span><span class="n">getColorSpaceNames</span><span class="p">()</span>
@@ -7743,8 +7743,8 @@ Built-in config: studio-config-v4.0.0_aces-v2.0_ocio-v2.5
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Built-in config: cg-config-v1.0.0_aces-v1.3_ocio-v2.1
-- Number of color spaces: 14
+<pre>Built-in config: cg-config-v4.0.0_aces-v2.0_ocio-v2.5
+- Number of color spaces: 25
 </pre>
 </div>
 </div>

@@ -31,12 +31,16 @@ def main():
     Main entry point for generating MaterialX definitions using OCIO.
     """
     parser = argparse.ArgumentParser(description="Create Materialx definitions using OCIO.")
-    parser.add_argument('--graph', dest='graph', help='Generate a node graph implementations instead of source code.', action='store_true')
-    parser.add_argument('--outputPath', dest='outputPath', help='File path to output material files to.')
+    parser.add_argument('-g', '--graph', dest='graph', help='Generate a node graph implementations instead of source code.', action='store_true')
+    parser.add_argument('-o', '--outputPath', dest='outputPath', help='File path to output material files to.')
 
     opts = parser.parse_args()
     outputPath = mx.FilePath("./data/")
     if opts.outputPath:
+        # If not existing create the output path
+        if not os.path.exists(opts.outputPath):
+            print('Creating output path: ' + opts.outputPath)
+            os.makedirs(opts.outputPath, exist_ok=True)
         outputPath = mx.FilePath(opts.outputPath)
 
     # Check OCIO version
@@ -92,7 +96,6 @@ def main():
                 if sourceColorSpace == targetColorSpace:
                     continue
 
-                print('--- Generate transform for source color space:', trySource, '---')
 
                 # Generate source code
                 if not opts.graph:
@@ -103,6 +106,7 @@ def main():
 
                     # Write the definition, implementation and source code files 
                     if definition:
+                        print('--- Generated shader code for source color space:', trySource, '---')
 
                         filename = outputPath / mx.FilePath(definition.getName() + '.' + 'mtlx')
                         print('Write MaterialX definition file:', filename.asString())
@@ -119,6 +123,8 @@ def main():
                     outputType = 'color3'
                     graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)
                     if graphDoc:
+                        print('Generating <nodegraph> for source color space:', trySource, '---')
+
                         transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, 'mxgraph_')
                         filename = outputPath / mx.FilePath(transformName + '.' + 'mtlx')
                         print('Write MaterialX node graph definition file:', filename.asString())

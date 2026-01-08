@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <nodedef name="ND_lin_adobergb_scene_to_lin_rec709_color3" node="lin_adobergb_scene_to_lin_rec709_color3" doc="Generated color space lin_adobergb_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.398355743960774, -0.3983557439607783, -0, 0, -0, 1, -0, 0, -0, -0.04292898929447386, 1.042928989294466, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
+    <output name="out" type="color3" />
+    <input name="in" type="color3" value="0, 0, 0" />
+  </nodedef>
+  <nodegraph name="NG_lin_adobergb_scene_to_lin_rec709_color3" nodedef="ND_lin_adobergb_scene_to_lin_rec709_color3">
+    <convert name="asVec" type="vector3">
+      <input name="in" type="color3" interfacename="in" />
+    </convert>
+    <transform name="matrixTransform" type="vector3">
+      <input name="in" type="vector3" nodename="asVec" />
+      <input name="mat" type="matrix33" value="1.3983557439607741, -0.3983557439607783, -0.0, -0.0, 1.0, -0.0, -0.0, -0.04292898929447386, 1.0429289892944664" />
+    </transform>
+    <convert name="asColor" type="color3">
+      <input name="in" type="vector3" nodename="matrixTransform" />
+    </convert>
+    <output name="out" type="color3" nodename="asColor" />
+  </nodegraph>
+</materialx>

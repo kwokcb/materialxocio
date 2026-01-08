@@ -108,11 +108,12 @@ for config in configs:
 
 
 # A more direct way to get the desired config is to call `CreateFomFile` with the appropriate built in path. In this case we get the `ACES Cg Config`.`
+# `ocio://default` is used to get the default built-in config. This can be replaced with a specific build in config such as for 2.5: `ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.5`
 
 # In[5]:
 
 
-acesCgConfigPath = 'ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1'
+acesCgConfigPath = 'ocio://default'
 builtinCfgC = OCIO.Config.CreateFromFile(acesCgConfigPath)
 print('Built-in config:', builtinCfgC.getName())
 csnames = builtinCfgC.getColorSpaceNames()

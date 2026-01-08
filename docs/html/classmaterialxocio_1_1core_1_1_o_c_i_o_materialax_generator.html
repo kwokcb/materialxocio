@@ -666,7 +666,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  393</span>        result = result.replace(<span class="stringliteral">&#39;&gt;&#39;</span>, <span class="stringliteral">&#39;)&#39;</span>)</div>
 <div class="line"><span class="lineno">  394</span>        result = re.sub(<span class="stringliteral">r&#39;[\r\n]+&#39;</span>, <span class="stringliteral">&#39;&#39;</span>, result)</div>
 <div class="line"><span class="lineno">  395</span> </div>
-<div class="line"><span class="lineno">  396</span>        print(result)</div>
+<div class="line"><span class="lineno">  396</span>        <span class="comment">#print(result)</span></div>
 <div class="line"><span class="lineno">  397</span>        docString = docString + <span class="stringliteral">&#39;. OCIO Transforms: &#39;</span> + result </div>
 <div class="line"><span class="lineno">  398</span>        nd.setDocString(docString)</div>
 <div class="line"><span class="lineno">  399</span> </div>
@@ -858,7 +858,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">  114</span>        <span class="keywordflow">try</span>:</div>
 <div class="line"><span class="lineno">  115</span>            processor = config.getProcessor(sourceColorSpace, destColorSpace)</div>
 <div class="line"><span class="lineno">  116</span>        <span class="keywordflow">except</span>:</div>
-<div class="line"><span class="lineno">  117</span>            print(<span class="stringliteral">&#39;Failed to generated code for transform: %s -&gt; %s&#39;</span> % (sourceColorSpace, destColorSpace))</div>
+<div class="line"><span class="lineno">  117</span>            print(<span class="stringliteral">&#39;Skipping due to lack of support for transform: %s -&gt; %s&#39;</span> % (sourceColorSpace, destColorSpace))</div>
 <div class="line"><span class="lineno">  118</span>            <span class="keywordflow">return</span> shaderCode, textureCount</div>
 <div class="line"><span class="lineno">  119</span> </div>
 <div class="line"><span class="lineno">  120</span>        <span class="keywordflow">if</span> processor:</div>
@@ -1005,7 +1005,7 @@ Public Member Functions</h2></td></tr>
 <div class="line"><span class="lineno">   41</span>                <span class="keywordflow">if</span> colorSpaces:</div>
 <div class="line"><span class="lineno">   42</span>                    configs[short_name] = [config, colorSpaces]</div>
 <div class="line"><span class="lineno">   43</span> </div>
-<div class="line"><span class="lineno">   44</span>        acesCgConfigPath = <span class="stringliteral">&#39;ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1&#39;</span></div>
+<div class="line"><span class="lineno">   44</span>        acesCgConfigPath = <span class="stringliteral">&#39;ocio://default&#39;</span></div>
 <div class="line"><span class="lineno">   45</span>        builtinCfgC = OCIO.Config.CreateFromFile(acesCgConfigPath)</div>
 <div class="line"><span class="lineno">   46</span>        print(<span class="stringliteral">&#39;Built-in config:&#39;</span>, builtinCfgC.getName())</div>
 <div class="line"><span class="lineno">   47</span>        csnames = builtinCfgC.getColorSpaceNames()</div>
