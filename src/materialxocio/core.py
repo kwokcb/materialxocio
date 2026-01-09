@@ -452,17 +452,22 @@ class OCIOMaterialaxGenerator():
                 matrixValue = matrixValue[0:3] + matrixValue[4:7] + matrixValue[8:11]
                 matrixValue = ', '.join([str(x) for x in matrixValue])
                 #print('  - Matrix:', matrixValue)
-                matInput.setAttribute('value', matrixValue)        
-
-                # Add offset value - TODO
-                offsetValue = transform.getOffset()
-                offsetValue = ', '.join([str(x) for x in offsetValue])
-                #print('  - Offset:', offsetValue)
-                # Add a add vector3 to graph
-
+                matInput.setValueString(matrixValue)
                 previousNode = matrixNode
+
+                # Add offset (add) node and connect to upstream matrix
+                offsetValue = transform.getOffset()
+                offsetValue = offsetValue[0:3]  # Only use first 3 values for vector3
+                # check if offset is non-zero
+                is_non_zero = any(abs(v) > 1e-6 for v in offsetValue)
+                if is_non_zero:                    
+                    offsetNode = ng.addNode('add', ng.createValidChildName(f'offset'), 'vector3')
+                    offsetInput1 = offsetNode.addInput('in1', 'vector3')
+                    offsetInput1.setConnectedNode(matrixNode)
+                    offsetInput2 = offsetNode.addInput('in2', 'vector3')
+                    offsetInput2.setValue(offsetValue, 'vector3')
+                    previousNode = offsetNode
             
-            # TODO: Handle other transform types
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT or transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR:
 
                 hasOffset = (transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR)
@@ -509,11 +514,11 @@ class OCIOMaterialaxGenerator():
                 inMin = transform.getMinInValue()
                 inMax = transform.getMaxInValue()
                 outMin = transform.getMinOutValue()
-                if not outMin:
-                    outMin = inMin
+                #if not outMin:
+                #    outMin = inMin
                 outMax = transform.getMaxOutValue()
-                if not outMax:
-                    outMax = inMax
+                #if not outMax:
+                #    outMax = inMax
                 #print(f'  - Range: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}',
                 #      transform)
 
@@ -528,7 +533,7 @@ class OCIOMaterialaxGenerator():
 
                 # If not clamp then it's a range remap
                 if not clamp_min and not clamp_max:
-                    rangeNode = ng.addNode('range', ng.createValidChildName(f'range'), 'vector3')
+                    rangeNode = ng.addNode('range', ng.createValidChildName(f'rangeTransform_range'), 'vector3')
                     rangeInput = rangeNode.addInput('in', 'vector3')
                     if previousNode:
                         rangeInput.setConnectedNode(previousNode)
@@ -552,7 +557,7 @@ class OCIOMaterialaxGenerator():
                     previousNode = rangeNode
 
                 elif clamp_max:
-                    clampNode = ng.addNode('min', ng.createValidChildName(f'clamp_max'), 'vector3')
+                    clampNode = ng.addNode('min', ng.createValidChildName(f'rangeTransform_clamp_max'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
                         clampInput.setConnectedNode(previousNode)
@@ -568,7 +573,7 @@ class OCIOMaterialaxGenerator():
                     previousNode = clampNode
 
                 elif clamp_min:
-                    clampNode = ng.addNode('max', ng.createValidChildName(f'clamp_min'), 'vector3')
+                    clampNode = ng.addNode('max', ng.createValidChildName(f'rangeTransform_clamp_min'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
                         clampInput.setConnectedNode(previousNode)
@@ -585,7 +590,10 @@ class OCIOMaterialaxGenerator():
 
 
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG_CAMERA:
-                print(f'- WARNING. Transform[{i}]: {transformType} support has not been implemented yet')
+                print(f'- WARNING. Transform[{i}]: LOG CAMERA support has not been implemented yet')
+
+            elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LUT1D:
+                print(f'- WARNING. Transform[{i}]: 1D LUT support has not been implemented yet')
 
             else:
                 print(f'- WARNING. Transform[{i}]: {transformType} support has not been implemented yet')

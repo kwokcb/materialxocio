@@ -8,23 +8,23 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
-    <range name="range" type="vector3">
+    <range name="rangeTransform_range" type="vector3">
       <input name="in" type="vector3" nodename="asVec" />
       <input name="inlow" type="vector3" value="-0.36, -0.36, -0.36" />
       <input name="inhigh" type="vector3" value="1.5, 1.5, 1.5" />
-      <input name="outlow" type="vector3" value="-0.36, -0.36, -0.36" />
+      <input name="outlow" type="vector3" value="0, 0, 0" />
       <input name="outhigh" type="vector3" value="1, 1, 1" />
     </range>
     <transform name="matrixTransform" type="vector3">
-      <input name="in" type="vector3" nodename="range" />
+      <input name="in" type="vector3" nodename="rangeTransform_range" />
       <input name="mat" type="matrix33" value="0.6954522413574519, 0.14067869647029416, 0.16386906217225405, 0.04479456337203772, 0.8596711184564217, 0.0955343181715404, -0.005525882558113544, 0.0040252103059786595, 1.001500672252135" />
     </transform>
-    <max name="clamp_min" type="vector3">
+    <max name="rangeTransform_clamp_min" type="vector3">
       <input name="in1" type="vector3" nodename="matrixTransform" />
       <input name="in2" type="vector3" value="0, 0, 0" />
     </max>
     <transform name="matrixTransform2" type="vector3">
-      <input name="in" type="vector3" nodename="clamp_min" />
+      <input name="in" type="vector3" nodename="rangeTransform_clamp_min" />
       <input name="mat" type="matrix33" value="2.52168618674388, -1.13413098823972, -0.387555198504164, -0.276479914229922, 1.37271908766826, -0.096239173438334, -0.0153780649660342, -0.152975335867399, 1.16835340083343" />
     </transform>
     <convert name="asColor" type="color3">
