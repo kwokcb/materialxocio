@@ -8,10 +8,12 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
-    <power name="exponent" type="vector3">
+    <!-- Exponent Transform: TransformType.TRANSFORM_TYPE_EXPONENT -->
+    <safepower name="exponent" type="vector3">
       <input name="in1" type="vector3" nodename="asVec" />
-      <input name="in2" type="float" value="2.19922, 2.19922, 2.19922" />
-    </power>
+      <input name="in2" type="vector3" value="2.19922, 2.19922, 2.19922" />
+    </safepower>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="exponent" />
       <input name="mat" type="matrix33" value="1.398356, -0.398356, -0.000000, -0.000000, 1.000000, -0.000000, -0.000000, -0.042929, 1.042929" />

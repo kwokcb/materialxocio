@@ -114,12 +114,12 @@ def main():
                         print('--- Generated shader code for source color space:', trySource, '---')
 
                         filename = outputPath / mx.FilePath(definition.getName() + '.' + 'mtlx')
-                        print('Write MaterialX definition file:', filename.asString())
+                        print('- Write MaterialX definition file:', filename.asString())
                         mx.writeToXmlFile(definitionDoc, filename)
 
                         # Write the implementation document
                         implFileName = outputPath / mx.FilePath('IM_' + transformName + '.' + 'mtlx')
-                        print('Write MaterialX implementation file:', implFileName.asString())
+                        print('- Write MaterialX implementation file:', implFileName.asString())
                         result = mx.writeToXmlFile(implDoc, implFileName)
 
                         generator.writeShaderCode(outputPath, code, transformName, extension, target)
@@ -140,7 +140,7 @@ def main():
 
                         transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, 'mxgraph_')
                         filename = outputPath / mx.FilePath(transformName + '.' + 'mtlx')
-                        print('Write MaterialX node graph definition file:', filename.asString())
+                        print('- Write MaterialX node graph definition file:', filename.asString())
                         mx.writeToXmlFile(graphDoc, filename)
 
             else:

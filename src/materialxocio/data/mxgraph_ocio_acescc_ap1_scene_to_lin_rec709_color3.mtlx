@@ -8,16 +8,35 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
+    <!-- Range Transform: TransformType.TRANSFORM_TYPE_RANGE -->
+    <range name="rangeTransform_range" type="vector3">
+      <input name="in" type="vector3" nodename="asVec" />
+      <input name="inlow" type="vector3" value="-0.36, -0.36, -0.36" />
+      <input name="inhigh" type="vector3" value="1.5, 1.5, 1.5" />
+      <input name="outlow" type="vector3" value="0, 0, 0" />
+      <input name="outhigh" type="vector3" value="1, 1, 1" />
+    </range>
     <min name="rangeTransform_clamp_max" type="vector3">
-      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in1" type="vector3" nodename="rangeTransform_range" />
       <input name="in2" type="vector3" value="1, 1, 1" />
     </min>
+    <max name="rangeTransform_clamp_min" type="vector3">
+      <input name="in1" type="vector3" nodename="rangeTransform_clamp_max" />
+      <input name="in2" type="vector3" value="0, 0, 0" />
+    </max>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
-      <input name="in" type="vector3" nodename="rangeTransform_clamp_max" />
+      <input name="in" type="vector3" nodename="rangeTransform_clamp_min" />
       <input name="mat" type="matrix33" value="0.695452, 0.140679, 0.163869, 0.044795, 0.859671, 0.095534, -0.005526, 0.004025, 1.001501" />
     </transform>
+    <!-- Range Transform: TransformType.TRANSFORM_TYPE_RANGE -->
+    <max name="rangeTransform_clamp_min2" type="vector3">
+      <input name="in1" type="vector3" nodename="matrixTransform" />
+      <input name="in2" type="vector3" value="0, 0, 0" />
+    </max>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform2" type="vector3">
-      <input name="in" type="vector3" nodename="matrixTransform" />
+      <input name="in" type="vector3" nodename="rangeTransform_clamp_min2" />
       <input name="mat" type="matrix33" value="2.521686, -1.134131, -0.387555, -0.276480, 1.372719, -0.096239, -0.015378, -0.152975, 1.168353" />
     </transform>
     <convert name="asColor" type="color3">

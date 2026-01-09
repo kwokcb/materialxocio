@@ -8,10 +8,11 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
-    <power name="exponent" type="vector3">
+    <!-- Exponent Transform: TransformType.TRANSFORM_TYPE_EXPONENT -->
+    <safepower name="exponent" type="vector3">
       <input name="in1" type="vector3" nodename="asVec" />
-      <input name="in2" type="float" value="2.4, 2.4, 2.4" />
-    </power>
+      <input name="in2" type="vector3" value="2.4, 2.4, 2.4" />
+    </safepower>
     <convert name="asColor" type="color3">
       <input name="in" type="vector3" nodename="exponent" />
     </convert>

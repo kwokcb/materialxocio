@@ -8,16 +8,22 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
-    <power name="exponent" type="vector3">
+    <!-- Exponent Transform: TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR -->
+    <add name="offset_add" type="vector3">
       <input name="in1" type="vector3" nodename="asVec" />
-      <input name="in2" type="float" value="2.4, 2.4, 2.4" />
-    </power>
-    <add name="offset" type="vector3">
-      <input name="in2" type="vector3" nodename="exponent" />
-      <input name="in1" type="vector3" value="0.055, 0.055, 0.055" />
+      <input name="in2" type="vector3" value="0.055, 0.055, 0.055" />
     </add>
+    <divide name="offset_div" type="vector3">
+      <input name="in1" type="vector3" nodename="offset_add" />
+      <input name="in2" type="vector3" value="1.055, 1.055, 1.055" />
+    </divide>
+    <safepower name="exponent" type="vector3">
+      <input name="in1" type="vector3" nodename="offset_div" />
+      <input name="in2" type="vector3" value="2.4, 2.4, 2.4" />
+    </safepower>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
-      <input name="in" type="vector3" nodename="offset" />
+      <input name="in" type="vector3" nodename="exponent" />
       <input name="mat" type="matrix33" value="1.705051, -0.621792, -0.083259, -0.130256, 1.140805, -0.010548, -0.024003, -0.128969, 1.152972" />
     </transform>
     <convert name="asColor" type="color3">

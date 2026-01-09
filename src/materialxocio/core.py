@@ -402,7 +402,7 @@ class OCIOMaterialaxGenerator():
         groupTransform = self.generateTransformGraph(config, sourceColorSpace, targetColorSpace)
 
         # To add. Proper testing of unsupported transforms...
-        invalidTransforms = [ OCIO.TransformType.TRANSFORM_TYPE_LUT3D, OCIO.TransformType.TRANSFORM_TYPE_LUT1D, 
+        unsupportedTransforms = [ OCIO.TransformType.TRANSFORM_TYPE_LUT3D, OCIO.TransformType.TRANSFORM_TYPE_LUT1D, 
                               OCIO.TransformType.TRANSFORM_TYPE_GRADING_PRIMARY ]
 
         # Create a document, a nodedef and a functional graph.
@@ -416,7 +416,7 @@ class OCIOMaterialaxGenerator():
         ndInput.setValue([0.0, 0.0, 0.0], 'color3')
         docString = f'Generated color space {sourceColorSpace} to {targetColorSpace} transform.'
         result = f'{groupTransform}'
-        # Replace '<' and '>' with '()' and ')'
+        # Replace '<' and '>' to avoid invalid XML in doc string'
         result = result.replace('<', '(')
         result = result.replace('>', ')')
         result = re.sub(r'[\r\n]+', '', result)
@@ -436,27 +436,30 @@ class OCIOMaterialaxGenerator():
             #print(f'No group transform found for the color space transform: {sourceColorSpace} to {targetColorSpace}')
             return None
         #print(f'Number of transforms: {groupTransform.__len__()}')
-        previousNode = None
+        previousNode = convertNode
 
         # Iterate and create appropriate nodes and connections
-        for i in range(groupTransform.__len__()):
-            transform = groupTransform.__getitem__(i)
+        for transform in groupTransform:
+
             # Get type of transform
             transformType = transform.getTransformType()
-            if transformType in invalidTransforms:
-                print(f'- WARNING: Transform[{i}]: {transformType} contains an unsupported transform type')
+            if transformType in unsupportedTransforms:
+                print(f'- WARNING: {transformType} is an unsupported transform type')
                 continue
 
             #print(f'- Transform[{i}]: {transformType}')   
             if transformType == OCIO.TransformType.TRANSFORM_TYPE_MATRIX:
+
+                # Add comment node
+                commentNode = ng.addNode('comment', ng.createValidChildName(f'matrixTransform_comment'))
+                commentNode.setDocString(f' Matrix Transform: {transformType} ')
+
                 matrixNode = ng.addNode('transform', ng.createValidChildName(f'matrixTransform'), 'vector3')
 
                 # Route output from previous node as input of current node
                 inInput = matrixNode.addInput('in', 'vector3')
                 if previousNode:            
                     inInput.setConnectedNode(previousNode)
-                else:
-                    inInput.setConnectedNode(convertNode)
 
                 # Set matrix value
                 matInput = matrixNode.addInput('mat', 'matrix33')
@@ -464,7 +467,6 @@ class OCIOMaterialaxGenerator():
                 # Extract 3x3 matrix from 4x4 matrix
                 matrixValue = matrixValue[0:3] + matrixValue[4:7] + matrixValue[8:11]
                 matrixValue = ', '.join([f"{x:.{self.PRECISION}f}" for x in matrixValue])
-                #print('  - Matrix:', matrixValue)
                 matInput.setValueString(matrixValue)
                 previousNode = matrixNode
 
@@ -484,49 +486,86 @@ class OCIOMaterialaxGenerator():
             
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT or transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR:
 
-                hasOffset = (transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR)
+                # Add comment node
+                commentNode = ng.addNode('comment', ng.createValidChildName(f'exponentTransform_comment'))
+                commentNode.setDocString(f' Exponent Transform: {transformType} ')
 
-                #print(f'- Transform[{i}]: {transformType} support has not been implemented yet')
-                exponentNode = ng.addNode('power', ng.createValidChildName(f'exponent'), 'vector3')
-                exponentInput = exponentNode.addInput('in1', 'vector3')
-                if previousNode:
-                    exponentInput.setConnectedNode(previousNode)
-                else:
-                    if i==0:
-                        exponentInput.setConnectedNode(convertNode)
-                    else:
-                        exponentInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                if transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT:
+                    # Plain exponent
+                    gammaValue = transform.getValue()[0:3]
+                    gammaValue = [round(v, self.PRECISION) for v in gammaValue]
 
-                exponentInput2 = exponentNode.addInput('in2', 'vector3')
-                exponentInput2Value = None
-                if not hasOffset:
-                    exponentInput2Value = transform.getValue()
-                else:
-                    exponentInput2Value = transform.getGamma()
-                # Only want the first 3 values in the array
-                exponentInput2Value = exponentInput2Value[0:3]
-                exponentInput2Value = [round(x, self.PRECISION) for x in exponentInput2Value]
-                exponentInput2.setValue(exponentInput2Value, 'float')
+                    powerNode = ng.addNode('safepower', ng.createValidChildName('exponent'), 'vector3')
+                    powerInput1 = powerNode.addInput('in1', 'vector3')
+                    powerInput1.setConnectedNode(previousNode)
+                    powerInput2 = powerNode.addInput('in2', 'vector3')
+                    powerInput2.setValue(gammaValue, 'vector3')
 
-                previousNode = exponentNode
+                    previousNode = powerNode
 
-                if hasOffset:
-                    # Add offset
-                    offsetNode = ng.addNode('add', ng.createValidChildName(f'offset'), 'vector3')
-                    offsetInput2 = offsetNode.addInput('in2', 'vector3')
-                    offsetInput2.setConnectedNode(exponentNode)
-                    offsetInput = offsetNode.addInput('in1', 'vector3')
-                    offsetValue = transform.getOffset()
-                    # Only want the first 3 values in the array
+                elif transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR:
+   
+                    # Extract offset and gamma values from the OCIO transform
+                    offsetValue = transform.getOffset()       # vector of 3 floats
+                    gammaValue = transform.getGamma()         # vector of 3 floats
+
+                    # Only take first 3 channels
                     offsetValue = offsetValue[0:3]
-                    offsetValue = [round(x, self.PRECISION) for x in offsetValue]
-                    offsetInput.setValue(offsetValue, 'vector3')
+                    gammaValue = gammaValue[0:3]
 
-                    previousNode = offsetNode
+                    # Optional: round for MaterialX precision
+                    offsetValue = [round(v, self.PRECISION) for v in offsetValue]
+                    gammaValue = [round(v, self.PRECISION) for v in gammaValue]
+
+                    # -----------------------
+                    # 1) Add offset node: x + offset
+                    # -----------------------
+                    addNode = ng.addNode('add', ng.createValidChildName('offset_add'), 'vector3')
+                    addInput1 = addNode.addInput('in1', 'vector3')
+                    addInput1.setConnectedNode(previousNode)
+                    addInput2 = addNode.addInput('in2', 'vector3')
+                    addInput2.setValue(offsetValue, 'vector3')
+                    previousNode = addNode
+
+                    # -----------------------
+                    # 2) Divide by (1 + offset): normalize
+                    # -----------------------
+                    if all(abs(v) < 1e-6 for v in offsetValue):
+                        pass
+                    else:
+                        # Add divide node
+                        divNode = ng.addNode('divide', ng.createValidChildName('offset_div'), 'vector3')
+                        divInput1 = divNode.addInput('in1', 'vector3')
+                        divInput1.setConnectedNode(previousNode)
+                        divInput2 = divNode.addInput('in2', 'vector3')
+                        # 1 + offset for each channel
+                        divInput2.setValue([1.0 + v for v in offsetValue], 'vector3')
+                        previousNode = divNode
+
+                    # -----------------------
+                    # 3) Apply exponent (safepower): pow(normalized, gamma)
+                    # -----------------------
+                    powerNode = ng.addNode('safepower', ng.createValidChildName('exponent'), 'vector3')
+                    powerInput1 = powerNode.addInput('in1', 'vector3')
+                    powerInput1.setConnectedNode(previousNode)
+                    powerInput2 = powerNode.addInput('in2', 'vector3')
+                    powerInput2.setValue(gammaValue, 'vector3')
+
+                    # -----------------------
+                    # Update previousNode to the output of this transform
+                    # -----------------------
+                    previousNode = powerNode
+
+                #commentNode = ng.addNode('comment', ng.createValidChildName(f'exponentTransform_comment_end'))
+                #commentNode.setDocString(f'End Exponent Transform: {transformType}')
+
 
             # Remap range
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_RANGE:
-                #print(transform)
+                # Add comment node
+                commentNode = ng.addNode('comment', ng.createValidChildName(f'rangeTransform_comment'))
+                commentNode.setDocString(f' Range Transform: {transformType} ')
+
                 # Set old min/max and new min/max
                 inMin = self.value_is_defined(transform.getMinInValue())
                 if inMin:
@@ -541,7 +580,7 @@ class OCIOMaterialaxGenerator():
                 if outMax:
                     outMax = round(outMax, self.PRECISION)
 
-                need_remap =  (inMin and inMax and outMin and outMax)
+                need_remap =  not (inMin is None or inMax is None or  outMin is None or outMax is None )
 
                 # Add a range remapper if needed
                 if need_remap:
@@ -549,8 +588,6 @@ class OCIOMaterialaxGenerator():
                     rangeInput = rangeNode.addInput('in', 'vector3')
                     if previousNode:
                         rangeInput.setConnectedNode(previousNode)
-                    else:
-                        rangeInput.setConnectedNode(convertNode)
 
                     inMinInput = rangeNode.addInput('inlow', 'vector3')
                     inMinInput.setValue([inMin, inMin, inMin], 'vector3')
@@ -566,13 +603,11 @@ class OCIOMaterialaxGenerator():
                     previousNode = rangeNode
 
                 # Clamp uppper bound output
-                if outMax:                   
+                if not outMax is None:                
                     clampNode = ng.addNode('min', ng.createValidChildName(f'rangeTransform_clamp_max'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
                         clampInput.setConnectedNode(previousNode)
-                    else:   
-                        clampInput.setConnectedNode(convertNode)
                     minInput = clampNode.addInput('in2', 'vector3')
                     minInput.setValue([outMax, outMax, outMax], 'vector3')
 
@@ -580,13 +615,11 @@ class OCIOMaterialaxGenerator():
                     previousNode = clampNode
 
                 # Clamp lower bound output
-                if outMin:
+                if not outMin is None:
                     clampNode = ng.addNode('max', ng.createValidChildName(f'rangeTransform_clamp_min'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
                         clampInput.setConnectedNode(previousNode)
-                    else:   
-                        clampInput.setConnectedNode(convertNode)
                     maxInput = clampNode.addInput('in2', 'vector3')
                     maxInput.setValue([outMin, outMin, outMin], 'vector3')
 
@@ -595,13 +628,13 @@ class OCIOMaterialaxGenerator():
 
 
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG_CAMERA:
-                print(f'- WARNING. Transform[{i}]: LOG CAMERA support has not been implemented yet')
+                print(f'- WARNING. LOG CAMERA is not currently supported')
 
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LUT1D:
-                print(f'- WARNING. Transform[{i}]: 1D LUT support has not been implemented yet')
+                print(f'- WARNING. 1D LUT is not currently supported ')
 
             else:
-                print(f'- WARNING. Transform[{i}]: {transformType} support has not been implemented yet')
+                print(f'- WARNING. Transformof type: "{transformType}" is not currently supported')
                 continue
 
 

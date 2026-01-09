@@ -8,6 +8,7 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="asVec" />
       <input name="mat" type="matrix33" value="2.521686, -1.134131, -0.387555, -0.276480, 1.372719, -0.096239, -0.015378, -0.152975, 1.168353" />
