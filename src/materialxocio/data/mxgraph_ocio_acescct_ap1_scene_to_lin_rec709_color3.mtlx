@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <nodedef name="ND_ocio_acescct_ap1_scene_to_lin_rec709_color3" node="ocio_acescct_ap1_scene_to_lin_rec709_color3" doc="Generated color space ocio:acescct_ap1_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (LogCameraTransform direction=inverse, base=2, logSideSlope=[0.0570776, 0.0570776, 0.0570776], logSideOffset=[0.554795, 0.554795, 0.554795], linSideSlope=[1, 1, 1], linSideOffset=[0, 0, 0], linSideBreak=[0.0078125, 0.0078125, 0.0078125])        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.705050992657982, -0.6217921206570056, -0.0832588720009797, 0, -0.1302564175070435, 1.140804736575405, -0.01054831906835765, 0, -0.02400335680461804, -0.1289689760649709, 1.152972332869586, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
+    <output name="out" type="color3" />
+    <input name="in" type="color3" value="0, 0, 0" />
+  </nodedef>
+  <nodegraph name="NG_ocio_acescct_ap1_scene_to_lin_rec709_color3" nodedef="ND_ocio_acescct_ap1_scene_to_lin_rec709_color3">
+    <convert name="asVec" type="vector3">
+      <input name="in" type="color3" interfacename="in" />
+    </convert>
+    <!-- Omitted Transform: TransformType.TRANSFORM_TYPE_LOG_CAMERA -->
+    <subtract name="linSub" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="vector3" value="0, 0, 0" />
+    </subtract>
+    <multiply name="linSeg" type="vector3">
+      <input name="in1" type="vector3" nodename="linSub" />
+      <input name="in2" type="vector3" value="1, 1, 1" />
+    </multiply>
+    <subtract name="logSubtract" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="vector3" value="0.554795, 0.554795, 0.554795" />
+    </subtract>
+    <multiply name="logMuliply" type="vector3">
+      <input name="in1" type="vector3" nodename="logSubtract" />
+      <input name="in2" type="vector3" value="0.057078, 0.057078, 0.057078" />
+    </multiply>
+    <power name="logPowwer" type="vector3">
+      <input name="in1" type="vector3" nodename="logMuliply" />
+      <input name="in2" type="vector3" value="2, 2, 2" />
+    </power>
+    <greaterThan name="mask" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="vector3" value="0.007812, 0.007812, 0.007812" />
+    </greaterThan>
+    <subtract name="oneMinusMask" type="vector3">
+      <input name="in1" type="vector3" value="1, 1, 1" />
+      <input name="in2" type="vector3" nodename="mask" />
+    </subtract>
+    <multiply name="maskTimesLog" type="vector3">
+      <input name="in1" type="vector3" nodename="mask" />
+      <input name="in2" type="vector3" nodename="logPowwer" />
+    </multiply>
+    <multiply name="oneMinusMaskTimesLin" type="vector3">
+      <input name="in1" type="vector3" nodename="oneMinusMask" />
+      <input name="in2" type="vector3" nodename="linSeg" />
+    </multiply>
+    <add name="logToLinOut" type="vector3">
+      <input name="in1" type="vector3" nodename="maskTimesLog" />
+      <input name="in2" type="vector3" nodename="oneMinusMaskTimesLin" />
+    </add>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
+    <transform name="matrixTransform" type="vector3">
+      <input name="in" type="vector3" nodename="logToLinOut" />
+      <input name="mat" type="matrix33" value="1.705051, -0.621792, -0.083259, -0.130256, 1.140805, -0.010548, -0.024003, -0.128969, 1.152972" />
+    </transform>
+    <convert name="asColor" type="color3">
+      <input name="in" type="vector3" nodename="matrixTransform" />
+    </convert>
+    <output name="out" type="color3" nodename="asColor" />
+  </nodegraph>
+</materialx>

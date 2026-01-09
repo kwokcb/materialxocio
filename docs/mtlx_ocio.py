@@ -108,11 +108,12 @@ for config in configs:
 
 
 # A more direct way to get the desired config is to call `CreateFomFile` with the appropriate built in path. In this case we get the `ACES Cg Config`.`
+# `ocio://default` is used to get the default built-in config. This can be replaced with a specific build in config such as for 2.5: `ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.5`
 
 # In[5]:
 
 
-acesCgConfigPath = 'ocio://cg-config-v1.0.0_aces-v1.3_ocio-v2.1'
+acesCgConfigPath = 'ocio://default'
 builtinCfgC = OCIO.Config.CreateFromFile(acesCgConfigPath)
 print('Built-in config:', builtinCfgC.getName())
 csnames = builtinCfgC.getColorSpaceNames()
@@ -193,7 +194,7 @@ def generateShaderCode(config, sourceColorSpace, destColorSpace, language):
             shaderDesc.setLanguage(language)
             gpuProcessor.extractGpuShaderInfo(shaderDesc)
             shaderCode = shaderDesc.getShaderText()
-    
+
     return shaderCode
 
 # Use GLSL as the shader language to produce, and linear as the target color space
@@ -289,7 +290,7 @@ def generateShaderCode2(config, sourceColorSpace, destColorSpace, language):
                             textureCount += 1
                 except OCIO.Exception as err:
                     print(err)
-    
+
     return shaderCode, textureCount
 
 
@@ -579,7 +580,7 @@ for gen in generationList:
         if not definition:
             definition = generateMaterialXDefinition(definitionDoc, sourceColorSpace, targetColorSpace, 
                                                     IN_PIXEL_STRING, type)
-        
+
         # Create the implementation
         createMaterialXImplementation(implDoc, definition, transformName, extension, target)
 
@@ -606,7 +607,7 @@ color3Def.copyContentFrom(definition)
 c3input = color3Def.getInput(IN_PIXEL_STRING)
 c3input.setType('color3')
 c3input.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
-    
+
 ngName = color3Def.getName().replace('ND_', 'NG_')
 ng = definitionDoc.addNodeGraph(ngName)
 c4instance = ng.addNodeInstance(definition)
@@ -707,7 +708,7 @@ def generateTransformGraph(config, sourceColorSpace, destColorSpace):
     if processor:
         processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
         groupTransform = processor.createGroupTransform()
-    
+
     return groupTransform
 
 
@@ -736,11 +737,11 @@ graphDoc = mx.createDocument()
 outputType = 'color3'
 xformName = sourceColorSpace + '_to_' + targetColorSpace + '_' + outputType
 nd = graphDoc.addNodeDef('ND_' + xformName )
-nd.setAttribute('node', xformName)
+nd.setNodeString(xformName)
 ndInput = nd.addInput('in', 'color3')
 ndInput.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'color3'))
 ng = graphDoc.addNodeGraph('NG_' + xformName)
-ng.setAttribute('nodedef', nd.getName())
+ng.setNodeDefString(nd.getName())
 convertNode = ng.addNode('convert', 'asVec', 'vector3')
 converInput = convertNode.addInput('in', 'color3')
 converInput.setInterfaceName('in')
@@ -765,10 +766,10 @@ for i in range(groupTransform.__len__()):
         # Route output from previous node as input of current node
         inInput = matrixNode.addInput('in', 'vector3')
         if previousNode:            
-            inInput.setAttribute('nodename', previousNode)
+            inInput.setConnectedNode(previousNode)
         else:
             if i==0:
-                inInput.setAttribute('nodename', 'asVec')
+                inInput.setConnectedNode(convertNode)
             else:
                 inInput.setValue(mx.createValueFromStrings('0.0 0.0 0.0', 'vector3'))
 
@@ -787,19 +788,19 @@ for i in range(groupTransform.__len__()):
         #print('  - Offset:', offsetValue)
         # Add a add vector3 to graph
 
-        previousNode = matrixNode.getName()
+        previousNode = matrixNode
     #elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG:
     #    print('  - Base:', transform.getBase())
 
 # Create an output for the last node if any
 convertNode2 = ng.addNode('convert', 'asColor', 'color3')
 converInput2 = convertNode2.addInput('in', 'vector3')
-converInput2.setAttribute('nodename', previousNode)
+converInput2.setConnectedNode(previousNode)
 if previousNode:
     out = ng.addOutput(ng.createValidChildName('out'), 'color3')
-    out.setAttribute('nodename', 'asColor')
+    out.setConnectedNode(convertNode2)
 
-# Write the graph document
+# Writse the graph document
 print('---------------------------')
 print('Write OCIO transform graph file:', xformName + '.' + 'mtlx')
 filename = mx.FilePath('./data') / mx.FilePath(xformName + '.' + 'mtlx')

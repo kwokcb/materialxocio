@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<materialx version="1.39">
+  <nodedef name="ND_ocio_acescc_ap1_scene_to_lin_rec709_color3" node="ocio_acescc_ap1_scene_to_lin_rec709_color3" doc="Generated color space ocio:acescc_ap1_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (RangeTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, minInValue=-0.36, maxInValue=1.5, minOutValue=0, maxOutValue=1)        (Lut1DTransform direction=forward, fileoutdepth=unknown, interpolation=linear, inputhalf=0, outputrawhalf=0, hueadjust=0, length=4096, minrgb=[-5.69976e-07, -5.69976e-07, -5.69976e-07], maxrgb=[96617.7, 96617.7, 96617.7])        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[0.6954522413574519, 0.1406786964702942, 0.1638690621722541, 0, 0.04479456337203772, 0.8596711184564216, 0.0955343181715404, 0, -0.005525882558113544, 0.004025210305978659, 1.001500672252135, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0])        (RangeTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, minInValue=0, minOutValue=0)        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[2.52168618674388, -1.13413098823972, -0.387555198504164, 0, -0.276479914229922, 1.37271908766826, -0.09623917343833401, 0, -0.0153780649660342, -0.152975335867399, 1.16835340083343, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
+    <output name="out" type="color3" />
+    <input name="in" type="color3" value="0, 0, 0" />
+  </nodedef>
+  <nodegraph name="NG_ocio_acescc_ap1_scene_to_lin_rec709_color3" nodedef="ND_ocio_acescc_ap1_scene_to_lin_rec709_color3">
+    <convert name="asVec" type="vector3">
+      <input name="in" type="color3" interfacename="in" />
+    </convert>
+    <!-- Range Transform: TransformType.TRANSFORM_TYPE_RANGE -->
+    <range name="rangeTransform_range" type="vector3">
+      <input name="in" type="vector3" nodename="asVec" />
+      <input name="inlow" type="vector3" value="-0.36, -0.36, -0.36" />
+      <input name="inhigh" type="vector3" value="1.5, 1.5, 1.5" />
+      <input name="outlow" type="vector3" value="0, 0, 0" />
+      <input name="outhigh" type="vector3" value="1, 1, 1" />
+    </range>
+    <min name="rangeTransform_clamp_max" type="vector3">
+      <input name="in1" type="vector3" nodename="rangeTransform_range" />
+      <input name="in2" type="vector3" value="1, 1, 1" />
+    </min>
+    <max name="rangeTransform_clamp_min" type="vector3">
+      <input name="in1" type="vector3" nodename="rangeTransform_clamp_max" />
+      <input name="in2" type="vector3" value="0, 0, 0" />
+    </max>
+    <!-- Omitted Transform: TransformType.TRANSFORM_TYPE_LUT1D -->
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
+    <transform name="matrixTransform" type="vector3">
+      <input name="in" type="vector3" nodename="rangeTransform_clamp_min" />
+      <input name="mat" type="matrix33" value="0.695452, 0.140679, 0.163869, 0.044795, 0.859671, 0.095534, -0.005526, 0.004025, 1.001501" />
+    </transform>
+    <!-- Range Transform: TransformType.TRANSFORM_TYPE_RANGE -->
+    <max name="rangeTransform_clamp_min2" type="vector3">
+      <input name="in1" type="vector3" nodename="matrixTransform" />
+      <input name="in2" type="vector3" value="0, 0, 0" />
+    </max>
+    <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
+    <transform name="matrixTransform2" type="vector3">
+      <input name="in" type="vector3" nodename="rangeTransform_clamp_min2" />
+      <input name="mat" type="matrix33" value="2.521686, -1.134131, -0.387555, -0.276480, 1.372719, -0.096239, -0.015378, -0.152975, 1.168353" />
+    </transform>
+    <convert name="asColor" type="color3">
+      <input name="in" type="vector3" nodename="matrixTransform2" />
+    </convert>
+    <output name="out" type="color3" nodename="asColor" />
+  </nodegraph>
+</materialx>

@@ -3,6 +3,7 @@ var classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator =
     [ "createColor3Variant", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ac0e90b55df128a89b5cd65c2450158c1", null ],
     [ "createMaterialXImplementation", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a1e97821b737bf68bd3ec8dfbfab89413", null ],
     [ "createTransformName", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ae05e27924d107932d179485a03503dee", null ],
+    [ "createValidName", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a9bacc0a41893504bdf7e8ed7adf4208a", null ],
     [ "generateMaterialXDefinition", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#ade1fc67e9633c12780a10505cfdd1b89", null ],
     [ "generateOCIO", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a3b10435b706d4e90bb8f50a2eb44ec00", null ],
     [ "generateOCIOGraph", "classmaterialxocio_1_1core_1_1_o_c_i_o_materialax_generator.html#a6391383d51af52dde021586a01b2994c", null ],
