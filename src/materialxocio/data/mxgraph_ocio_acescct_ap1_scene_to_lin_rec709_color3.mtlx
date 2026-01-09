@@ -8,9 +8,50 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
+    <!-- Omitted Transform: TransformType.TRANSFORM_TYPE_LOG_CAMERA -->
+    <subtract name="linSub" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="vector3" value="0, 0, 0" />
+    </subtract>
+    <multiply name="linSeg" type="vector3">
+      <input name="in1" type="vector3" nodename="linSub" />
+      <input name="in2" type="vector3" value="1, 1, 1" />
+    </multiply>
+    <subtract name="logSubtract" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="vector3" value="0.554795, 0.554795, 0.554795" />
+    </subtract>
+    <multiply name="logMuliply" type="vector3">
+      <input name="in1" type="vector3" nodename="logSubtract" />
+      <input name="in2" type="vector3" value="0.057078, 0.057078, 0.057078" />
+    </multiply>
+    <power name="logPowwer" type="vector3">
+      <input name="in1" type="vector3" nodename="logMuliply" />
+      <input name="in2" type="vector3" value="2, 2, 2" />
+    </power>
+    <greaterThan name="mask" type="vector3">
+      <input name="in1" type="vector3" nodename="asVec" />
+      <input name="in2" type="vector3" value="0.007812, 0.007812, 0.007812" />
+    </greaterThan>
+    <subtract name="oneMinusMask" type="vector3">
+      <input name="in1" type="vector3" value="1, 1, 1" />
+      <input name="in2" type="vector3" nodename="mask" />
+    </subtract>
+    <multiply name="maskTimesLog" type="vector3">
+      <input name="in1" type="vector3" nodename="mask" />
+      <input name="in2" type="vector3" nodename="logPowwer" />
+    </multiply>
+    <multiply name="oneMinusMaskTimesLin" type="vector3">
+      <input name="in1" type="vector3" nodename="oneMinusMask" />
+      <input name="in2" type="vector3" nodename="linSeg" />
+    </multiply>
+    <add name="logToLinOut" type="vector3">
+      <input name="in1" type="vector3" nodename="maskTimesLog" />
+      <input name="in2" type="vector3" nodename="oneMinusMaskTimesLin" />
+    </add>
     <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
-      <input name="in" type="vector3" nodename="asVec" />
+      <input name="in" type="vector3" nodename="logToLinOut" />
       <input name="mat" type="matrix33" value="1.705051, -0.621792, -0.083259, -0.130256, 1.140805, -0.010548, -0.024003, -0.128969, 1.152972" />
     </transform>
     <convert name="asColor" type="color3">

@@ -24,6 +24,7 @@
       <input name="in1" type="vector3" nodename="rangeTransform_clamp_max" />
       <input name="in2" type="vector3" value="0, 0, 0" />
     </max>
+    <!-- Omitted Transform: TransformType.TRANSFORM_TYPE_LUT1D -->
     <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="rangeTransform_clamp_min" />

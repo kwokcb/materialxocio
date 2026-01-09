@@ -445,6 +445,9 @@ class OCIOMaterialaxGenerator():
             transformType = transform.getTransformType()
             if transformType in unsupportedTransforms:
                 print(f'- WARNING: {transformType} is an unsupported transform type')
+                # Add comment node
+                commentNode = ng.addNode('comment', ng.createValidChildName(f'unsupportedTransform_comment'))
+                commentNode.setDocString(f' Omitted Transform: {transformType} ')
                 continue
 
             #print(f'- Transform[{i}]: {transformType}')   
@@ -628,7 +631,104 @@ class OCIOMaterialaxGenerator():
 
 
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG_CAMERA:
-                print(f'- WARNING. LOG CAMERA is not currently supported')
+                # TODO: This would be useful as a custom nodedef instead embedded here.
+
+                # Add comment node
+                commentNode = ng.addNode('comment', ng.createValidChildName(f'logCameraTransform_comment'))
+                commentNode.setDocString(f' Omitted Transform: {transformType} ')                
+
+                # -----------------------
+                # 1) Extract values from the transform
+                # -----------------------
+                linBreak      = transform.getLinSideBreakValue()[0:3]  # Linear side break (linSideBreak)
+                linOffset     = transform.getLinSideOffsetValue()[0:3] # Linear segment offset
+                linSlope      = transform.getLinSideSlopeValue()[0:3]  # Linear segment slope
+                linearSlope   = transform.getLinearSlopeValue()[0:3]   # Overall linear slope (may be defaulted)
+                logOffset     = transform.getLogSideOffsetValue()[0:3] # Log segment offset
+                logSlope      = transform.getLogSideSlopeValue()[0:3]  # Log segment slope
+                logBase       = transform.getBase()                     # Scalar base of log
+
+                # Round values for MaterialX precision
+                linBreak    = [round(v, self.PRECISION) for v in linBreak]
+                linOffset   = [round(v, self.PRECISION) for v in linOffset]
+                linSlope    = [round(v, self.PRECISION) for v in linSlope]
+                linearSlope = [round(v, self.PRECISION) for v in linearSlope]
+                logOffset   = [round(v, self.PRECISION) for v in logOffset]
+                logSlope    = [round(v, self.PRECISION) for v in logSlope]
+                logBaseVec  = [round(logBase, self.PRECISION)]*3
+
+                # -----------------------
+                # 2) Linear segment: (in - linOffset) * linSlope
+                # -----------------------
+                linSubNode = ng.addNode('subtract', ng.createValidChildName('linSub'), 'vector3')
+                linSubNode.addInput('in1', 'vector3').setConnectedNode(previousNode)
+                linSubNode.addInput('in2', 'vector3').setValue(linOffset, 'vector3')
+
+                linSegNode = ng.addNode('multiply', ng.createValidChildName('linSeg'), 'vector3')
+                linSegNode.addInput('in1', 'vector3').setConnectedNode(linSubNode)
+                linSegNode.addInput('in2', 'vector3').setValue(linSlope, 'vector3')
+
+                # -----------------------
+                # 3) Log segment
+                # logSeg = (pow(logBase, (in - logOffset) * logSlope)) * linearSlope (if linear scaling)
+                # -----------------------
+                logSubNode = ng.addNode('subtract', ng.createValidChildName('logSubtract'), 'vector3')                
+                logSubNodeInput1 = logSubNode.addInput('in1', 'vector3')
+                if previousNode:
+                    logSubNodeInput1.setConnectedNode(previousNode)
+                else:
+                    logSubNodeInput1.setValue([0.0, 0.0, 0.0], 'vector3')
+                logSubNode.addInput('in2', 'vector3').setValue(logOffset, 'vector3')
+
+                logMulNode = ng.addNode('multiply', ng.createValidChildName('logMuliply'), 'vector3')
+                logMulNode.addInput('in1', 'vector3').setConnectedNode(logSubNode)
+                logMulNode.addInput('in2', 'vector3').setValue(logSlope, 'vector3')
+
+                logPowNode = ng.addNode('power', ng.createValidChildName('logPowwer'), 'vector3')
+                logPowNode.addInput('in1', 'vector3').setConnectedNode(logMulNode)
+                logPowNode.addInput('in2', 'vector3').setValue(logBaseVec, 'vector3')
+
+                # Apply overall linear slope scaling if defined
+                if transform.isLinearSlopeValueSet():
+                    logScaledNode = ng.addNode('multiply', ng.createValidChildName('logScaled'), 'vector3')
+                    logScaledNode.addInput('in1', 'vector3').setConnectedNode(logPowNode)
+                    logScaledNode.addInput('in2', 'vector3').setValue(linearSlope, 'vector3')
+                    logSegNode = logScaledNode
+                else:
+                    logSegNode = logPowNode
+
+                # -----------------------
+                # 4) Mask = greaterThan(input, linBreak)
+                # -----------------------
+                maskNode = ng.addNode('greaterThan', ng.createValidChildName('mask'), 'vector3')
+                maskNode.addInput('in1', 'vector3').setConnectedNode(previousNode)
+                maskNode.addInput('in2', 'vector3').setValue(linBreak, 'vector3')
+
+                # -----------------------
+                # 5) Blend: mask * logSeg + (1 - mask) * linSeg
+                # -----------------------
+                #oneVecNode = ng.addNode('constant', ng.createValidChildName('oneVec'), 'vector3')                
+                #oneVecNode.addInput('value').setValue([1.0, 1.0, 1.0], 'vector3')
+
+                oneMinusMaskNode = ng.addNode('subtract', ng.createValidChildName('oneMinusMask'), 'vector3')
+                oneMinusMaskNode.addInput('in1', 'vector3').setValue([1.0, 1.0, 1.0], 'vector3')
+                oneMinusMaskNode.addInput('in2', 'vector3').setConnectedNode(maskNode)
+
+                maskTimesLogNode = ng.addNode('multiply', ng.createValidChildName('maskTimesLog'), 'vector3')
+                maskTimesLogNode.addInput('in1', 'vector3').setConnectedNode(maskNode)
+                maskTimesLogNode.addInput('in2', 'vector3').setConnectedNode(logSegNode)
+
+                oneMinusMaskTimesLinNode = ng.addNode('multiply', ng.createValidChildName('oneMinusMaskTimesLin'), 'vector3')
+                oneMinusMaskTimesLinNode.addInput('in1', 'vector3').setConnectedNode(oneMinusMaskNode)
+                oneMinusMaskTimesLinNode.addInput('in2', 'vector3').setConnectedNode(linSegNode)
+
+                blendNode = ng.addNode('add', ng.createValidChildName('logToLinOut'), 'vector3')
+                blendNode.addInput('in1', 'vector3').setConnectedNode(maskTimesLogNode)
+                blendNode.addInput('in2', 'vector3').setConnectedNode(oneMinusMaskTimesLinNode)
+
+                previousNode = blendNode
+
+
 
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LUT1D:
                 print(f'- WARNING. 1D LUT is not currently supported ')

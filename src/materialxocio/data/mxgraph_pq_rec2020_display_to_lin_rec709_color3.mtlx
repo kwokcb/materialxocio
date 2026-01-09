@@ -8,6 +8,7 @@
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>
+    <!-- Omitted Transform: TransformType.TRANSFORM_TYPE_LUT1D -->
     <!-- Matrix Transform: TransformType.TRANSFORM_TYPE_MATRIX -->
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="asVec" />
