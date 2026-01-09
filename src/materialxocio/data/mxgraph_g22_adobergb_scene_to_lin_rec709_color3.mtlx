@@ -14,7 +14,7 @@
     </power>
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="exponent" />
-      <input name="mat" type="matrix33" value="1.3983557439607741, -0.39835574396077833, -0.0, -0.0, 1.0, -0.0, -0.0, -0.04292898929447386, 1.0429289892944664" />
+      <input name="mat" type="matrix33" value="1.398356, -0.398356, -0.000000, -0.000000, 1.000000, -0.000000, -0.000000, -0.042929, 1.042929" />
     </transform>
     <convert name="asColor" type="color3">
       <input name="in" type="vector3" nodename="matrixTransform" />

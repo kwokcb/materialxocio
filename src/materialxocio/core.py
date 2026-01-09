@@ -9,11 +9,21 @@ The minimum requirement is OCIO version 2.2 which is packaged with
 import PyOpenColorIO as OCIO
 import MaterialX as mx
 import re
+import math
 
 class OCIOMaterialaxGenerator():
     '''
     A class to generate MaterialX color transform definitions using OCIO.
     '''
+    def __init__(self):
+        self.PRECISION = 6
+
+    def set_precision(self, precision = 6):
+        '''
+        Set the precision for floating point values. Default is 6
+        @param precision: The number of decimal places.
+        '''
+        self.PRECISION = precision  
 
     def getBuiltinConfigs(self):
         '''
@@ -175,7 +185,7 @@ class OCIOMaterialaxGenerator():
             return groupTransform
 
         if processor:
-            processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL) 
+            processor = processor.getOptimizedProcessor(OCIO.OPTIMIZATION_ALL)
             groupTransform = processor.createGroupTransform()
         
         return groupTransform    
@@ -373,6 +383,12 @@ class OCIOMaterialaxGenerator():
 
         return definition, transformName, code, extension, target     
     
+    def value_is_defined(self, v):
+        # Handle quirky OCIO usage of Nan value returns
+        if v is not None and not math.isnan(v):
+            return v
+        return None
+
     def generateOCIOGraph(self, config, sourceColorSpace = 'acescg', targetColorSpace = 'lin_rec709',
                           type='color3'):
         '''
@@ -440,17 +456,14 @@ class OCIOMaterialaxGenerator():
                 if previousNode:            
                     inInput.setConnectedNode(previousNode)
                 else:
-                    #if i==0:
-                        inInput.setConnectedNode(convertNode)
-                    #else:
-                    #    inInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                    inInput.setConnectedNode(convertNode)
 
                 # Set matrix value
                 matInput = matrixNode.addInput('mat', 'matrix33')
                 matrixValue = transform.getMatrix()
                 # Extract 3x3 matrix from 4x4 matrix
                 matrixValue = matrixValue[0:3] + matrixValue[4:7] + matrixValue[8:11]
-                matrixValue = ', '.join([str(x) for x in matrixValue])
+                matrixValue = ', '.join([f"{x:.{self.PRECISION}f}" for x in matrixValue])
                 #print('  - Matrix:', matrixValue)
                 matInput.setValueString(matrixValue)
                 previousNode = matrixNode
@@ -461,6 +474,7 @@ class OCIOMaterialaxGenerator():
                 # check if offset is non-zero
                 is_non_zero = any(abs(v) > 1e-6 for v in offsetValue)
                 if is_non_zero:                    
+                    offsetValue = [round(x, self.PRECISION) for x in offsetValue]
                     offsetNode = ng.addNode('add', ng.createValidChildName(f'offset'), 'vector3')
                     offsetInput1 = offsetNode.addInput('in1', 'vector3')
                     offsetInput1.setConnectedNode(matrixNode)
@@ -491,6 +505,7 @@ class OCIOMaterialaxGenerator():
                     exponentInput2Value = transform.getGamma()
                 # Only want the first 3 values in the array
                 exponentInput2Value = exponentInput2Value[0:3]
+                exponentInput2Value = [round(x, self.PRECISION) for x in exponentInput2Value]
                 exponentInput2.setValue(exponentInput2Value, 'float')
 
                 previousNode = exponentNode
@@ -504,44 +519,38 @@ class OCIOMaterialaxGenerator():
                     offsetValue = transform.getOffset()
                     # Only want the first 3 values in the array
                     offsetValue = offsetValue[0:3]
+                    offsetValue = [round(x, self.PRECISION) for x in offsetValue]
                     offsetInput.setValue(offsetValue, 'vector3')
 
                     previousNode = offsetNode
 
             # Remap range
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_RANGE:
+                #print(transform)
                 # Set old min/max and new min/max
-                inMin = transform.getMinInValue()
-                inMax = transform.getMaxInValue()
-                outMin = transform.getMinOutValue()
-                #if not outMin:
-                #    outMin = inMin
-                outMax = transform.getMaxOutValue()
-                #if not outMax:
-                #    outMax = inMax
-                #print(f'  - Range: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}',
-                #      transform)
+                inMin = self.value_is_defined(transform.getMinInValue())
+                if inMin:
+                    inMin = round(inMin, self.PRECISION)
+                inMax = self.value_is_defined(transform.getMaxInValue())
+                if inMax:
+                    inMax = round(inMax, self.PRECISION)
+                outMin = self.value_is_defined(transform.getMinOutValue())
+                if outMin:
+                    outMin = round(outMin, self.PRECISION)
+                outMax = self.value_is_defined(transform.getMaxOutValue())
+                if outMax:
+                    outMax = round(outMax, self.PRECISION)
 
-                clamp_min = False
-                clamp_max = False
-                if inMin and not inMax and not outMax:
-                    #print(f'  ->>>>>>>> Clamp max: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}')
-                    clamp_max = True
-                elif inMax and not inMin and not outMin:
-                    #print(f'  ->>>>>>>>> Clamp min: inMin={inMin}, inMax={inMax}, outMin={outMin}, outMax={outMax}')
-                    clamp_min = True
+                need_remap =  (inMin and inMax and outMin and outMax)
 
-                # If not clamp then it's a range remap
-                if not clamp_min and not clamp_max:
+                # Add a range remapper if needed
+                if need_remap:
                     rangeNode = ng.addNode('range', ng.createValidChildName(f'rangeTransform_range'), 'vector3')
                     rangeInput = rangeNode.addInput('in', 'vector3')
                     if previousNode:
                         rangeInput.setConnectedNode(previousNode)
                     else:
-                        if i==0:
-                            rangeInput.setConnectedNode(convertNode)
-                        else:
-                            rangeInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                        rangeInput.setConnectedNode(convertNode)
 
                     inMinInput = rangeNode.addInput('inlow', 'vector3')
                     inMinInput.setValue([inMin, inMin, inMin], 'vector3')
@@ -556,34 +565,30 @@ class OCIOMaterialaxGenerator():
 
                     previousNode = rangeNode
 
-                elif clamp_max:
+                # Clamp uppper bound output
+                if outMax:                   
                     clampNode = ng.addNode('min', ng.createValidChildName(f'rangeTransform_clamp_max'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
                         clampInput.setConnectedNode(previousNode)
                     else:   
-                        if i==0:
-                            clampInput.setConnectedNode(convertNode)
-                        else:
-                            clampInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                        clampInput.setConnectedNode(convertNode)
                     minInput = clampNode.addInput('in2', 'vector3')
-                    minInput.setValue([inMax, inMax, inMax], 'vector3')
+                    minInput.setValue([outMax, outMax, outMax], 'vector3')
 
-                    #print('add clamp max node:', mx.prettyPrint(clampNode))
+                    #print(f'add clamp max {outMax} node:', mx.prettyPrint(clampNode))
                     previousNode = clampNode
 
-                elif clamp_min:
+                # Clamp lower bound output
+                if outMin:
                     clampNode = ng.addNode('max', ng.createValidChildName(f'rangeTransform_clamp_min'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
                         clampInput.setConnectedNode(previousNode)
                     else:   
-                        if i==0:
-                            clampInput.setConnectedNode(convertNode)
-                        else:
-                            clampInput.setValue([0.0, 0.0, 0.0], 'vector3')
+                        clampInput.setConnectedNode(convertNode)
                     maxInput = clampNode.addInput('in2', 'vector3')
-                    maxInput.setValue([inMin, inMin, inMin], 'vector3')
+                    maxInput.setValue([outMin, outMin, outMin], 'vector3')
 
                     #print('add clamp min node:', mx.prettyPrint(clampNode))
                     previousNode = clampNode

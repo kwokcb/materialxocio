@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_srgbe_p3d65_display_to_lin_rec709_color3" node="srgbe_p3d65_display_to_lin_rec709_color3" doc="Generated color space srgbe_p3d65_display to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (ExponentWithLinearTransform direction=forward, gamma=[2.4, 2.4, 2.4, 1], offset=[0.055, 0.055, 0.055, 0], style=mirror)        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.22494017628056, -0.2249401762805579, -0, 0, -0.04205695470968808, 1.042056954709691, 0, 0, -0.01963755459033452, -0.07863604555063225, 1.098273600140962, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
+  <nodedef name="ND_srgbe_p3d65_display_to_lin_rec709_color3" node="srgbe_p3d65_display_to_lin_rec709_color3" doc="Generated color space srgbe_p3d65_display to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (ExponentWithLinearTransform direction=forward, gamma=[2.4, 2.4, 2.4, 1], offset=[0.055, 0.055, 0.055, 0], style=mirror)        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.22494017628056, -0.2249401762805581, -0, 0, -0.04205695470968814, 1.042056954709691, 0, 0, -0.01963755459033451, -0.07863604555063225, 1.098273600140961, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>
@@ -18,7 +18,7 @@
     </add>
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="offset" />
-      <input name="mat" type="matrix33" value="1.2249401762805603, -0.2249401762805579, -0.0, -0.04205695470968808, 1.0420569547096905, 0.0, -0.01963755459033452, -0.07863604555063225, 1.0982736001409619" />
+      <input name="mat" type="matrix33" value="1.224940, -0.224940, -0.000000, -0.042057, 1.042057, 0.000000, -0.019638, -0.078636, 1.098274" />
     </transform>
     <convert name="asColor" type="color3">
       <input name="in" type="vector3" nodename="matrixTransform" />
