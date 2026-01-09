@@ -395,7 +395,7 @@ class OCIOMaterialaxGenerator():
         xformName = self.createValidName(sourceColorSpace) + '_to_' + self.createValidName(targetColorSpace) + '_' + outputType
         
         nd = graphDoc.addNodeDef('ND_' + xformName )
-        nd.setAttribute('node', xformName)
+        nd.setNodeString(xformName)
         ndInput = nd.addInput('in', 'color3')
         ndInput.setValue([0.0, 0.0, 0.0], 'color3')
         docString = f'Generated color space {sourceColorSpace} to {targetColorSpace} transform.'
@@ -410,7 +410,7 @@ class OCIOMaterialaxGenerator():
         nd.setDocString(docString)
 
         ng = graphDoc.addNodeGraph('NG_' + xformName)
-        ng.setAttribute('nodedef', nd.getName())
+        ng.setNodeDefString(nd.getName())
         convertNode = ng.addNode('convert', 'asVec', 'vector3')
         converInput = convertNode.addInput('in', 'color3')
         converInput.setInterfaceName('in')
@@ -438,10 +438,10 @@ class OCIOMaterialaxGenerator():
                 # Route output from previous node as input of current node
                 inInput = matrixNode.addInput('in', 'vector3')
                 if previousNode:            
-                    inInput.setAttribute('nodename', previousNode)
+                    inInput.setConnectedNode(previousNode)
                 else:
                     #if i==0:
-                        inInput.setAttribute('nodename', 'asVec')
+                        inInput.setConnectedNode(convertNode)
                     #else:
                     #    inInput.setValue([0.0, 0.0, 0.0], 'vector3')
 
@@ -460,7 +460,7 @@ class OCIOMaterialaxGenerator():
                 #print('  - Offset:', offsetValue)
                 # Add a add vector3 to graph
 
-                previousNode = matrixNode.getName()
+                previousNode = matrixNode
             
             # TODO: Handle other transform types
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT or transformType == OCIO.TransformType.TRANSFORM_TYPE_EXPONENT_WITH_LINEAR:
@@ -471,10 +471,10 @@ class OCIOMaterialaxGenerator():
                 exponentNode = ng.addNode('power', ng.createValidChildName(f'exponent'), 'vector3')
                 exponentInput = exponentNode.addInput('in1', 'vector3')
                 if previousNode:
-                    exponentInput.setAttribute('nodename', previousNode)
+                    exponentInput.setConnectedNode(previousNode)
                 else:
                     if i==0:
-                        exponentInput.setAttribute('nodename', 'asVec')
+                        exponentInput.setConnectedNode(convertNode)
                     else:
                         exponentInput.setValue([0.0, 0.0, 0.0], 'vector3')
 
@@ -488,21 +488,20 @@ class OCIOMaterialaxGenerator():
                 exponentInput2Value = exponentInput2Value[0:3]
                 exponentInput2.setValue(exponentInput2Value, 'float')
 
-                previousNode = exponentNode.getName()
+                previousNode = exponentNode
 
                 if hasOffset:
                     # Add offset
                     offsetNode = ng.addNode('add', ng.createValidChildName(f'offset'), 'vector3')
                     offsetInput2 = offsetNode.addInput('in2', 'vector3')
-                    offsetInput2.setNodeName(exponentNode.getName())
-                    offsetInput2.removeAttribute('value')
+                    offsetInput2.setConnectedNode(exponentNode)
                     offsetInput = offsetNode.addInput('in1', 'vector3')
                     offsetValue = transform.getOffset()
                     # Only want the first 3 values in the array
                     offsetValue = offsetValue[0:3]
                     offsetInput.setValue(offsetValue, 'vector3')
 
-                    previousNode = offsetNode.getName()
+                    previousNode = offsetNode
 
             # Remap range
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_RANGE:
@@ -532,10 +531,10 @@ class OCIOMaterialaxGenerator():
                     rangeNode = ng.addNode('range', ng.createValidChildName(f'range'), 'vector3')
                     rangeInput = rangeNode.addInput('in', 'vector3')
                     if previousNode:
-                        rangeInput.setAttribute('nodename', previousNode)
+                        rangeInput.setConnectedNode(previousNode)
                     else:
                         if i==0:
-                            rangeInput.setAttribute('nodename', 'asVec')
+                            rangeInput.setConnectedNode(convertNode)
                         else:
                             rangeInput.setValue([0.0, 0.0, 0.0], 'vector3')
 
@@ -550,39 +549,39 @@ class OCIOMaterialaxGenerator():
 
                     #print("add range node:", mx.prettyPrint(rangeNode))
 
-                    previousNode = rangeNode.getName()
+                    previousNode = rangeNode
 
                 elif clamp_max:
                     clampNode = ng.addNode('min', ng.createValidChildName(f'clamp_max'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
-                        clampInput.setAttribute('nodename', previousNode)
+                        clampInput.setConnectedNode(previousNode)
                     else:   
                         if i==0:
-                            clampInput.setAttribute('nodename', 'asVec')
+                            clampInput.setConnectedNode(convertNode)
                         else:
                             clampInput.setValue([0.0, 0.0, 0.0], 'vector3')
                     minInput = clampNode.addInput('in2', 'vector3')
                     minInput.setValue([inMax, inMax, inMax], 'vector3')
 
                     #print('add clamp max node:', mx.prettyPrint(clampNode))
-                    previousNode = clampNode.getName()
+                    previousNode = clampNode
 
                 elif clamp_min:
                     clampNode = ng.addNode('max', ng.createValidChildName(f'clamp_min'), 'vector3')
                     clampInput = clampNode.addInput('in1', 'vector3')
                     if previousNode:
-                        clampInput.setAttribute('nodename', previousNode)
+                        clampInput.setConnectedNode(previousNode)
                     else:   
                         if i==0:
-                            clampInput.setAttribute('nodename', 'asVec')
+                            clampInput.setConnectedNode(convertNode)
                         else:
                             clampInput.setValue([0.0, 0.0, 0.0], 'vector3')
                     maxInput = clampNode.addInput('in2', 'vector3')
                     maxInput.setValue([inMin, inMin, inMin], 'vector3')
 
                     #print('add clamp min node:', mx.prettyPrint(clampNode))
-                    previousNode = clampNode.getName()
+                    previousNode = clampNode
 
 
             elif transformType == OCIO.TransformType.TRANSFORM_TYPE_LOG_CAMERA:
@@ -597,14 +596,13 @@ class OCIOMaterialaxGenerator():
         convertNode2 = ng.addNode('convert', 'asColor', 'color3')
         converInput2 = convertNode2.addInput('in', 'vector3')
         if previousNode:
-            converInput2.setAttribute('nodename', previousNode)
+            converInput2.setConnectedNode(previousNode)
         else:
             # Pass-through
             #print('No transforms applied. Transform is a pass-through.')
-            converInput2.setAttribute('nodename', 'asVec')
-
+            converInput2.setConnectedNode(convertNode)
         out = ng.addOutput(ng.createValidChildName('out'), 'color3')
-        out.setAttribute('nodename', 'asColor')
+        out.setConnectedNode(convertNode2)
 
         return graphDoc
 
@@ -636,10 +634,7 @@ class OCIOMaterialaxGenerator():
         #ngin = ng.addInput('in', 'color3')
         ng.setNodeDef(color3Def)
 
-        c4instanceIn.setNodeName(c3to4.getName())        
-        c4instanceIn.removeAttribute('value')
-        c4to3Input.setNodeName(c4instance.getName())
-        c4to3Input.removeAttribute('value')
-        ngout.setNodeName(c4to3.getName())
-        ngout.removeAttribute('value')
+        c4instanceIn.setConnectedNode(c3to4)
+        c4to3Input.setConnectedNode(c4instance)
+        ngout.setConnectedNode(c4to3)
         c3to4Input.setInterfaceName(IN_PIXEL_STRING)
