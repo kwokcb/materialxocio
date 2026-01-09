@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_pq_rec2020_display_to_lin_rec709_color3" node="pq_rec2020_display_to_lin_rec709_color3" doc="Generated color space pq_rec2020_display to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (Lut1DTransform direction=forward, fileoutdepth=unknown, interpolation=default, inputhalf=1, outputrawhalf=0, hueadjust=0, length=65536, minrgb=[-65504, -65504, -65504], maxrgb=[65504, 65504, 65504])        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.660491002108434, -0.5876411387885482, -0.07284986331988558, 0, -0.1245504745215907, 1.132899897125963, -0.008349422604369119, 0, -0.0181507633549053, -0.1005788980080078, 1.118729661362908, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
+  <nodedef name="ND_pq_rec2020_display_to_lin_rec709_color3" node="pq_rec2020_display_to_lin_rec709_color3" doc="Generated color space pq_rec2020_display to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (Lut1DTransform direction=forward, fileoutdepth=unknown, interpolation=default, inputhalf=1, outputrawhalf=0, hueadjust=0, length=65536, minrgb=[-65504, -65504, -65504], maxrgb=[65504, 65504, 65504])        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.660491002108435, -0.5876411387885481, -0.07284986331988583, 0, -0.1245504745215907, 1.132899897125963, -0.008349422604369125, 0, -0.01815076335490531, -0.1005788980080078, 1.118729661362909, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>
@@ -10,7 +10,7 @@
     </convert>
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="asVec" />
-      <input name="mat" type="matrix33" value="1.6604910021084345, -0.5876411387885482, -0.07284986331988558, -0.12455047452159071, 1.132899897125963, -0.00834942260436912, -0.018150763354905296, -0.10057889800800782, 1.1187296613629079" />
+      <input name="mat" type="matrix33" value="1.6604910021084351, -0.5876411387885481, -0.07284986331988583, -0.12455047452159074, 1.132899897125963, -0.008349422604369125, -0.01815076335490531, -0.1005788980080078, 1.1187296613629085" />
     </transform>
     <convert name="asColor" type="color3">
       <input name="in" type="vector3" nodename="matrixTransform" />

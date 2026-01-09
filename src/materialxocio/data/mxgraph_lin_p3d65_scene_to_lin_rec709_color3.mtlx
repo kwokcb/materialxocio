@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_lin_p3d65_scene_to_lin_rec709_color3" node="lin_p3d65_scene_to_lin_rec709_color3" doc="Generated color space lin_p3d65_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.224940176280555, -0.224940176280563, -0, 0, -0.04205695470968766, 1.04205695470969, 0, 0, -0.01963755459033445, -0.07863604555063194, 1.098273600140968, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
+  <nodedef name="ND_lin_p3d65_scene_to_lin_rec709_color3" node="lin_p3d65_scene_to_lin_rec709_color3" doc="Generated color space lin_p3d65_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (MatrixTransform direction=forward, fileindepth=unknown, fileoutdepth=unknown, matrix=[1.224940176280555, -0.2249401762805629, -0, 0, -0.04205695470968764, 1.04205695470969, 0, 0, -0.01963755459033445, -0.07863604555063192, 1.098273600140968, 0, 0, 0, 0, 1], offset=[0, 0, 0, 0]))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>
@@ -10,7 +10,7 @@
     </convert>
     <transform name="matrixTransform" type="vector3">
       <input name="in" type="vector3" nodename="asVec" />
-      <input name="mat" type="matrix33" value="1.224940176280555, -0.22494017628056295, -0.0, -0.04205695470968766, 1.0420569547096903, 0.0, -0.019637554590334446, -0.07863604555063194, 1.0982736001409683" />
+      <input name="mat" type="matrix33" value="1.2249401762805545, -0.22494017628056287, -0.0, -0.042056954709687636, 1.0420569547096903, 0.0, -0.019637554590334446, -0.07863604555063192, 1.098273600140968" />
     </transform>
     <convert name="asColor" type="color3">
       <input name="in" type="vector3" nodename="matrixTransform" />

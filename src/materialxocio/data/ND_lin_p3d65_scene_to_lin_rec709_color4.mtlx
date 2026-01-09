@@ -11,7 +11,7 @@
   </nodedef>
   <nodegraph name="NG_lin_p3d65_scene_to_lin_rec709_color3" nodedef="ND_lin_p3d65_scene_to_lin_rec709_color3">
     <lin_p3d65_scene_to_lin_rec709 name="node1" type="color4" nodedef="ND_lin_p3d65_scene_to_lin_rec709_color4">
-      <input name="in" type="color4" value="0, 0, 0, 1" nodename="c3to4" />
+      <input name="in" type="color4" nodename="c3to4" />
     </lin_p3d65_scene_to_lin_rec709>
     <convert name="c3to4" type="color4">
       <input name="in" type="color3" interfacename="in" />

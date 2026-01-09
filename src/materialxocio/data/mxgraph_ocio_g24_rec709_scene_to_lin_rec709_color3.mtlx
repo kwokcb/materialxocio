@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <materialx version="1.39">
-  <nodedef name="ND_ocio:g24_rec709_scene_to_lin_rec709_color3" node="ocio:g24_rec709_scene_to_lin_rec709_color3" doc="Generated color space ocio:g24_rec709_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (ExponentTransform direction=forward, value=[2.4, 2.4, 2.4, 1], style=pass_thru))">
+  <nodedef name="ND_ocio_g24_rec709_scene_to_lin_rec709_color3" node="ocio_g24_rec709_scene_to_lin_rec709_color3" doc="Generated color space ocio:g24_rec709_scene to lin_rec709 transform.. OCIO Transforms: (GroupTransform direction=forward, transforms=        (ExponentTransform direction=forward, value=[2.4, 2.4, 2.4, 1], style=pass_thru))">
     <output name="out" type="color3" />
     <input name="in" type="color3" value="0, 0, 0" />
   </nodedef>
-  <nodegraph name="NG_ocio:g24_rec709_scene_to_lin_rec709_color3" nodedef="ND_ocio:g24_rec709_scene_to_lin_rec709_color3">
+  <nodegraph name="NG_ocio_g24_rec709_scene_to_lin_rec709_color3" nodedef="ND_ocio_g24_rec709_scene_to_lin_rec709_color3">
     <convert name="asVec" type="vector3">
       <input name="in" type="color3" interfacename="in" />
     </convert>

@@ -67,6 +67,17 @@ class OCIOMaterialaxGenerator():
                 rows = rows + '| ' + c + ' | ' + colorSpace.getName() + ' | ' + ', '.join(aliases) + ' |\n'
 
         return title + rows
+    
+    def createValidName(self, name: str) -> str:
+        '''
+        Create a valid name MaterialX name. Remove ":" even though it's technically valid
+        for namespaced names.
+        @param str: The input string.
+        @return: The valid name string.
+        '''
+        name = mx.createValidName(name)
+        name = name.replace(':', '_')
+        return name
 
     def createTransformName(self, sourceSpace, targetSpace, typeName, prefix = 'mx_'):
         '''
@@ -76,7 +87,7 @@ class OCIOMaterialaxGenerator():
         @param typeName: The type name.
         @param prefix: The prefix for the transform name. Default is 'mx_'.
         '''        
-        transformFunctionName = prefix + mx.createValidName(sourceSpace) + "_to_" + mx.createValidName(targetSpace) + "_" + typeName 
+        transformFunctionName = prefix + self.createValidName(sourceSpace) + "_to_" + self.createValidName(targetSpace) + "_" + typeName 
         return transformFunctionName
 
     def setShaderDescriptionParameters(self, shaderDesc, sourceSpace, targetSpace, typeName):
@@ -250,6 +261,7 @@ class OCIOMaterialaxGenerator():
 
         definition = doc.addNodeDef(nodeName, 'color4')
         category = sourceColorSpace + '_to_' + targetColorSpace
+        category = self.createValidName(category)
         definition.setNodeString(category)
         definition.setNodeGroup('colortransform')
         definition.setDocString(docString)
@@ -380,7 +392,7 @@ class OCIOMaterialaxGenerator():
         # Create a document, a nodedef and a functional graph.
         graphDoc = mx.createDocument()
         outputType = 'color3'
-        xformName = sourceColorSpace + '_to_' + targetColorSpace + '_' + outputType
+        xformName = self.createValidName(sourceColorSpace) + '_to_' + self.createValidName(targetColorSpace) + '_' + outputType
         
         nd = graphDoc.addNodeDef('ND_' + xformName )
         nd.setAttribute('node', xformName)
@@ -483,6 +495,7 @@ class OCIOMaterialaxGenerator():
                     offsetNode = ng.addNode('add', ng.createValidChildName(f'offset'), 'vector3')
                     offsetInput2 = offsetNode.addInput('in2', 'vector3')
                     offsetInput2.setNodeName(exponentNode.getName())
+                    offsetInput2.removeAttribute('value')
                     offsetInput = offsetNode.addInput('in1', 'vector3')
                     offsetValue = transform.getOffset()
                     # Only want the first 3 values in the array
@@ -623,7 +636,10 @@ class OCIOMaterialaxGenerator():
         #ngin = ng.addInput('in', 'color3')
         ng.setNodeDef(color3Def)
 
-        c4instanceIn.setNodeName(c3to4.getName())
+        c4instanceIn.setNodeName(c3to4.getName())        
+        c4instanceIn.removeAttribute('value')
         c4to3Input.setNodeName(c4instance.getName())
+        c4to3Input.removeAttribute('value')
         ngout.setNodeName(c4to3.getName())
+        ngout.removeAttribute('value')
         c3to4Input.setInterfaceName(IN_PIXEL_STRING)

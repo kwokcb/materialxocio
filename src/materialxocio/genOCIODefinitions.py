@@ -106,6 +106,11 @@ def main():
 
                     # Write the definition, implementation and source code files 
                     if definition:
+                        valid, errors = definitionDoc.validate()
+                        if not valid:
+                            print('Generated MaterialX definition document is not valid:')
+                            print(errors)
+
                         print('--- Generated shader code for source color space:', trySource, '---')
 
                         filename = outputPath / mx.FilePath(definition.getName() + '.' + 'mtlx')
@@ -124,11 +129,14 @@ def main():
                     
                     graphDoc = generator.generateOCIOGraph(aconfig, sourceColorSpace, targetColorSpace, outputType)
                     if graphDoc:
+                        valid, errors = graphDoc.validate()
+                        if not valid:
+                            print('Generated MaterialX definition document is not valid:')
+                            print(errors)
+
                         print('Generated <nodegraph> for source color space:', trySource, '---')
-                        sourceColorSpace = mx.createValidName(sourceColorSpace)
-                        targetColorSpace = mx.createValidName(targetColorSpace)
-                        sourceColorSpace = sourceColorSpace.replace(':', '_')
-                        targetColorSpace = targetColorSpace.replace(':', '_')
+                        sourceColorSpace = generator.createValidName(sourceColorSpace)
+                        targetColorSpace = generator.createValidName(targetColorSpace)
 
                         transformName = generator.createTransformName(sourceColorSpace, targetColorSpace, outputType, 'mxgraph_')
                         filename = outputPath / mx.FilePath(transformName + '.' + 'mtlx')
